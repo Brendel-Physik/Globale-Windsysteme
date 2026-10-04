@@ -686,7 +686,7 @@ const CONTENT = {
           frage: 'Vom Pol aus: Warum kann die Luft am Boden nur in eine Richtung strömen?',
           optionen: [
             { text: 'Vom Pol aus führt jeder Weg in Richtung Äquator.', richtig: true, ok: 'Stimmt. Egal, wohin die Luft vom Pol aus strömt: Sie strömt immer in Richtung Äquator.' },
-            { text: 'Vom Pol aus kann sie auch weiter zum Pol strömen.', rueckfrage: 'Die Luft ist schon am Pol. Kann sie von dort noch näher an den Pol strömen?' },
+            { text: 'Am Pol kann die Luft auch noch weiter polwärts strömen.', rueckfrage: 'Die Luft ist schon am Pol. Kann sie von dort noch näher an den Pol strömen?' },
             { text: 'Der warme Äquator zieht die kalte Luft an.', rueckfrage: 'Luft wird nicht angezogen. Stellt euch vor, ihr steht auf dem Nordpol: Wohin führt jeder Weg?' }
           ]
         },
@@ -882,7 +882,7 @@ const CONTENT = {
         denkanstoss: 'Auf der Nordhalbkugel liegt der Äquator im Süden. Stellt euch in Bewegungsrichtung: Wo ist rechts? Nutzt das Richtungswerkzeug.',
         fragen: [
           {
-            frage: 'In Richtung Äquator heißt hier: nach Süden. Wer nach Süden geht, hat rechts …',
+            frage: 'In Richtung Äquator heißt hier: nach Süden. Wer nach Süden geht, hat auf der rechten Seite …',
             optionen: [
               { text: 'Osten', rueckfrage: 'Dreht euch gedanklich nach Süden. Die Sonne geht im Osten auf: links oder rechts?' },
               { text: 'Westen', richtig: true, ok: 'Stimmt. Was bedeutet das für die Richtung, in die die Luft strömt?' },
@@ -962,7 +962,7 @@ const CONTENT = {
         denkanstoss: 'Diesmal bewegt sich die Luft in Richtung Pol, auf der Nordhalbkugel also nach Norden. Stellt euch in diese Richtung: Wo ist jetzt rechts? Nutzt das Richtungswerkzeug.',
         fragen: [
           {
-            frage: 'In Richtung Pol heißt hier: nach Norden. Wer nach Norden geht, hat rechts …',
+            frage: 'In Richtung Pol heißt hier: nach Norden. Wer nach Norden geht, hat auf der rechten Seite …',
             optionen: [
               { text: 'Osten', richtig: true, ok: 'Stimmt. Was bedeutet das für die Richtung, in die die Luft strömt?' },
               { text: 'Westen', rueckfrage: 'Dreht euch gedanklich nach Norden. Die Sonne geht im Osten auf: links oder rechts?' },
@@ -1061,9 +1061,9 @@ const CONTENT = {
       fehlerbilder: {
         herkunft: 'Euer Eintrag passt zu einem Wind, der genau andersherum weht. Habt ihr den Wind nach der Richtung benannt, in die er weht? Karte W12: Benannt wird nach der Herkunft.',
         seite: 'Euer Eintrag passt zu einer Ablenkung nach links. Karte W11: Auf der Nordhalbkugel wird nach rechts abgelenkt, in Bewegungsrichtung gesehen.',
-        seiteHerkunft: 'Euer Eintrag passt zu einer Ablenkung nach links und zu einem Namen nach dem Ziel. Prüft beides mit Karte W11 und Karte W12.',
+        seiteHerkunft: 'Euer Eintrag passt zu einer Ablenkung nach links und zu einem Wind, der nach seinem Ziel statt nach seiner Herkunft benannt ist. Prüft beides mit Karte W11 und Karte W12.',
         ohne: 'Euer Eintrag passt zu Luft, die gar nicht abgelenkt wird. Denkt an Karte W11.',
-        ohneHerkunft: 'Euer Eintrag passt zu Luft ohne Ablenkung, benannt nach ihrem Ziel. Denkt an Karte W11 und Karte W12.',
+        ohneHerkunft: 'Euer Eintrag passt zu Luft, die nicht abgelenkt und nach ihrem Ziel statt nach ihrer Herkunft benannt ist. Denkt an Karte W11 und Karte W12.',
         fast: 'Fast. Die Luft wird abgelenkt, strömt aber trotzdem noch in Richtung Äquator. Kommt sie dann genau aus Osten?',
         guertelTropen: 'Die Passate wehen zwischen dem subtropischen Hochdruckgürtel und dem Äquator. Liegt Bamberg so nah am Äquator?',
         guertelPol: 'Die polaren Ostwinde wehen zwischen dem polaren Kältehoch und 65°. Liegt Bamberg so nah am Pol?'
@@ -1076,9 +1076,9 @@ const CONTENT = {
           frage: 'Zwischen 0° und 23,5°: Welche Aussagen erklären die Windrichtung dort? Wählt alle passenden aus.',
           optionen: [
             { text: 'Die Luft strömt vom subtropischen Hochdruckgürtel in Richtung Äquator.', richtig: true },
-            { text: 'In Richtung Äquator geht es nach Süden, rechts davon liegt Westen.', richtig: true },
+            { text: 'Wer in Richtung Äquator schaut, also nach Süden, hat Westen auf der rechten Seite.', richtig: true },
             { text: 'Winde werden nach der Richtung benannt, aus der sie kommen.', richtig: true },
-            { text: 'In Richtung Äquator geht es nach Süden, rechts davon liegt Osten.' },
+            { text: 'Wer in Richtung Äquator schaut, also nach Süden, hat Osten auf der rechten Seite.' },
             { text: 'Winde werden nach der Richtung benannt, in die sie wehen.' }
           ],
           tipp: 'Geht den Weg der Luft nach: Wohin strömt sie, wohin wird sie abgelenkt, und wonach wird ein Wind benannt? Das Richtungswerkzeug hilft.',
@@ -1099,9 +1099,9 @@ const CONTENT = {
           frage: 'Zwischen 35° und 65°: Welche Aussagen erklären die Windrichtung dort? Wählt alle passenden aus.',
           optionen: [
             { text: 'Die Luft strömt am Boden vom Hoch zum Tief, also in Richtung Pol.', richtig: true },
-            { text: 'In Richtung Pol geht es nach Norden, rechts davon liegt Osten.', richtig: true },
+            { text: 'Wer in Richtung Pol schaut, also nach Norden, hat Osten auf der rechten Seite.', richtig: true },
             { text: 'Winde werden nach der Richtung benannt, aus der sie kommen.', richtig: true },
-            { text: 'In Richtung Pol geht es nach Norden, rechts davon liegt Westen.' },
+            { text: 'Wer in Richtung Pol schaut, also nach Norden, hat Westen auf der rechten Seite.' },
             { text: 'Die Luft strömt am Boden vom Tief zum Hoch, also in Richtung Äquator.' }
           ],
           tipp: 'Wohin strömt die Luft zwischen 35° und 65° am Boden? Stellt euch in diese Richtung: Wo ist rechts? Benannt wird der Wind nach seiner Herkunft.',
@@ -1109,7 +1109,7 @@ const CONTENT = {
         },
         S8: {
           nach: ['S7'],
-          frage: 'Bamberg: Was erklärt die Windrichtung dort?',
+          frage: 'Bamberg: Womit beginnt die Erklärung der Windrichtung dort?',
           optionen: [
             { text: 'Bamberg liegt zwischen subtropischem Hochdruckgürtel und subpolarer Tiefdruckrinne.', richtig: true, ok: 'Stimmt.' },
             { text: 'Bamberg liegt zwischen subpolarer Tiefdruckrinne und polarem Kältehoch.', rueckfrage: 'Das polare Kältehoch liegt zwischen 80° und dem Pol. Liegt Bamberg so nah am Pol?' },
@@ -1365,7 +1365,7 @@ const CONTENT = {
       { id: 'q20', niveau: 'standard', typ: 'auswahl', thema: 'ablenkung',
         frage: 'Luft strömt auf der Nordhalbkugel in Richtung Pol. Wohin wird sie abgelenkt?',
         optionen: ['nach Osten', 'nach Westen', 'gar nicht', 'zurück in Richtung Äquator'], richtig: 0,
-        erklaerung: 'In Richtung Pol heißt hier nach Norden. Wer nach Norden geht, hat rechts Osten. Auf der Nordhalbkugel wird jede Luftbewegung nach rechts abgelenkt (W11).',
+        erklaerung: 'In Richtung Pol heißt hier nach Norden. Wer nach Norden geht, hat Osten auf der rechten Seite. Auf der Nordhalbkugel wird jede Luftbewegung nach rechts abgelenkt (W11).',
         tipp: 'In Richtung Pol heißt auf der Nordhalbkugel: nach Norden. Wo ist rechts, wenn du nach Norden gehst?' },
       { id: 'q21', niveau: 'standard', typ: 'richtigfalsch', thema: 'benennung',
         aussage: 'Ein Westwind weht nach Westen.', richtig: false,
@@ -1374,7 +1374,7 @@ const CONTENT = {
         tipp: 'Wird ein Wind nach seinem Ziel oder nach seiner Herkunft benannt?' },
       { id: 'q22', niveau: 'standard', typ: 'auswahl', thema: 'ablenkung',
         frage: 'Warum weht der Passat auf der Nordhalbkugel aus Nordosten und nicht aus Norden?',
-        optionen: ['Die Luft strömt in Richtung Äquator und wird nach rechts, also nach Westen, abgelenkt.', 'Die Luft strömt in Richtung Äquator und wird nach links, also nach Osten, abgelenkt.', 'Die Luft kommt vom Pol her und wird unterwegs immer weiter nach Westen gelenkt.', 'Im Osten ist es wärmer als im Westen, deshalb strömt die Luft von dort.'], richtig: 0,
+        optionen: ['Die Luft strömt in Richtung Äquator und wird nach rechts, also nach Westen, abgelenkt.', 'Die Luft strömt in Richtung Äquator und wird nach links, also nach Osten, abgelenkt.', 'Die Luft kommt vom Pol her und wird unterwegs immer weiter nach Westen abgelenkt.', 'Im Osten ist es wärmer als im Westen, deshalb strömt die Luft von dort.'], richtig: 0,
         erklaerung: 'Ohne Ablenkung käme der Wind aus Norden. Die Ablenkung nach rechts, also nach Westen, macht daraus eine Strömung nach Südwesten. Der Wind kommt also aus Nordosten.',
         tipp: 'Ohne Ablenkung käme der Passat aus Norden. Was ändert die Ablenkung nach rechts?' },
       { id: 'q23', niveau: 'standard', typ: 'luecken', thema: 'passat',
@@ -1409,7 +1409,7 @@ const CONTENT = {
       { id: 'q28', niveau: 'standard', typ: 'auswahl', thema: 'ablenkung',
         frage: 'Luft strömt vom polaren Kältehoch in Richtung Äquator. Aus welcher Richtung kommt der Wind?',
         optionen: ['aus Nordosten bis Osten', 'aus Südwesten bis Westen', 'aus Süden', 'aus Nordwesten'], richtig: 0,
-        erklaerung: 'In Richtung Äquator heißt hier nach Süden. Wer nach Süden geht, hat rechts Westen. Die Luft wird nach Westen abgelenkt und kommt aus Nordosten bis Osten: die polaren Ostwinde.',
+        erklaerung: 'In Richtung Äquator heißt hier nach Süden. Wer nach Süden geht, hat Westen auf der rechten Seite. Die Luft wird nach Westen abgelenkt und kommt aus Nordosten bis Osten: die polaren Ostwinde.',
         tipp: 'In Richtung Äquator heißt auf der Nordhalbkugel: nach Süden. Wo ist dann rechts, und woher kommt die Luft?' },
       { id: 'q29', niveau: 'standard', typ: 'richtigfalsch', thema: 'hochtief',
         aussage: 'Im subtropischen Hochdruckgürtel ist die Luft warm. Trotzdem herrscht dort hoher Luftdruck.', richtig: true,
@@ -1460,7 +1460,7 @@ const CONTENT = {
         tipp: 'In Bamberg strömt die Luft am Boden vom subtropischen Hochdruckgürtel zur subpolaren Tiefdruckrinne. Woher kommt sie ohne Ablenkung?' },
       { id: 'q38', niveau: 'profi', typ: 'richtigfalsch', thema: 'sued',
         aussage: 'Luft, die polwärts strömt, wird zum Westwind. Das gilt auf beiden Halbkugeln.', richtig: true,
-        begruendungen: ['Im Norden: nach Norden, Ablenkung nach rechts; im Süden: nach Süden, Ablenkung nach links. Beide Male nach Osten.', 'Auf beiden Halbkugeln wird die Luft nach rechts abgelenkt, also immer in dieselbe Richtung.', 'Polwärts strömende Luft wird nicht abgelenkt und kommt deshalb auf beiden Halbkugeln aus Westen.'], begruendungRichtig: 0,
+        begruendungen: ['Auf der Nordhalbkugel strömt sie nach Norden und nach rechts, auf der Südhalbkugel nach Süden und nach links: beide Male nach Osten.', 'Auf beiden Halbkugeln wird polwärts strömende Luft nach rechts abgelenkt, also immer in dieselbe Richtung.', 'Polwärts strömende Luft wird auf keiner Halbkugel abgelenkt und kommt deshalb auf beiden Halbkugeln aus Westen.'], begruendungRichtig: 0,
         erklaerung: 'Polwärts heißt auf der Nordhalbkugel nach Norden, auf der Südhalbkugel nach Süden. In beiden Fällen wird die Luft nach Osten abgelenkt. Der Wind kommt also aus Westen.',
         tipp: 'Prüfe beide Halbkugeln: Polwärts heißt im Norden nach Norden, im Süden nach Süden. Wohin wird die Luft jeweils abgelenkt?' },
       { id: 'q39', niveau: 'profi', typ: 'auswahl', thema: 'bamberg',
@@ -1476,7 +1476,7 @@ const CONTENT = {
       { id: 'q41', niveau: 'profi', typ: 'auswahl', thema: 'ablenkung',
         frage: 'Gedankenexperiment: Auf der Nordhalbkugel würde jede Luftbewegung nach links abgelenkt. Woher käme dann der Passat?',
         optionen: ['aus Nordwesten', 'aus Nordosten', 'aus Südosten', 'aus Südwesten'], richtig: 0,
-        erklaerung: 'Der Passat strömt in Richtung Äquator, hier also nach Süden. Wer nach Süden geht, hat links Osten. Die Luft würde nach Südosten strömen und käme aus Nordwesten.',
+        erklaerung: 'Der Passat strömt in Richtung Äquator, hier also nach Süden. Wer nach Süden geht, hat Osten auf der linken Seite. Die Luft würde nach Südosten strömen und käme aus Nordwesten.',
         tipp: 'Der Passat strömt in Richtung Äquator, auf der Nordhalbkugel also nach Süden. Wo ist links, wenn du nach Süden gehst?' },
       { id: 'q42', niveau: 'profi', typ: 'luecken', thema: 'sued',
         frage: 'Ergänze die Zusammenfassung zur Südhalbkugel.',
