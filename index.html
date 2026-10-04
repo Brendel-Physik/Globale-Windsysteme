@@ -76,6 +76,9 @@ const CONFIG = {
   // true = das Quiz ist erst nach dem Codewort benutzbar (Standard laut Plan: false)
   QUIZ_ERST_NACH_CODEWORT: false,
 
+  // true = im Quiz gibt es das Abfrage-Training (offene Aufträge mit Checkliste). Zurzeit ausgeblendet.
+  ABFRAGE_TRAINING: false,
+
   // Mindestlänge eigener Texte, bevor Musterlösung oder Checkliste erscheinen
   MIN_ZEICHEN_FREITEXT: 40,
 
@@ -169,7 +172,7 @@ const CONTENT = {
     meldungGeleert: 'Alle Einträge gelöscht.',
     // Nach dem Prüfen nur die Anzahl; welche Einträge stimmen, zeigt sich nach und nach
     ergebnisZeile: '{r} von {n} Einträgen stimmen.',
-    verdeckt: 'Welche das sind, seht ihr nach und nach: Ein Eintrag wird grün, sobald ihr die Rückfrage dazu gelöst oder ihn in der Hilfe richtig korrigiert habt.',
+    verdeckt: 'Welche das sind, seht ihr nach den Rückfragen: Dann werden die Einträge grün, die stimmen und die ihr begründet habt. Später kommen die dazu, die ihr in der Hilfe richtig korrigiert.',
     jetztDran: 'Jetzt dran: {kurz}. Nur die Felder in diesem Bereich könnt ihr ändern.',
     gesperrtWaehrendRf: 'Während der Rückfragen ist das Schema gesperrt.',
     // Hilfe zu einem Eintrag, der noch nicht stimmt
@@ -224,20 +227,20 @@ const CONTENT = {
     bildLabel: 'Bild zum Denkanstoß',
     tippLabel: 'Tipp:',
     // Rückfragen: zuerst zu den richtigen Einträgen, am Ende zu korrigierten Einträgen
-    rfTitelA: 'Rückfragen zu euren richtigen Einträgen',
-    rfEinleitungA: 'Einige Einträge stimmen schon. Beantwortet zuerst kurze Rückfragen dazu. So ist klar, dass nicht geraten wurde. Ist eine Rückfrage gelöst, wird der Eintrag oben grün.',
-    rfEinleitungAlle: 'Alle Einträge stimmen. Beantwortet noch kurze Rückfragen dazu. So ist klar, dass nicht geraten wurde.',
-    rfDanachHilfe: 'Danach kümmert ihr euch um die Einträge, die noch nicht stimmen.',
+    rfTitelA: 'Rückfragen zu euren Einträgen',
+    rfEinleitungA: 'Zu jedem Bereich gibt es eine Rückfrage. Beantwortet sie in Ruhe. Welche Einträge stimmen, seht ihr, wenn alle Rückfragen gelöst sind.',
+    rfEinleitungAlle: 'Alle Einträge stimmen. Beantwortet zu jedem Bereich noch eine kurze Rückfrage. So ist klar, dass nicht geraten wurde.',
+    rfDanachHilfe: 'Danach gibt es, wo nötig, Hilfe.',
     rfTitelC: 'Zum Schluss: kurze Rückfragen',
     rfEinleitungC: 'Alle Einträge stimmen jetzt. Beantwortet zum Schluss noch kurze Rückfragen zu den Einträgen, die ihr korrigiert habt, und zu Einträgen, deren Rückfrage vorher etwas verraten hätte.',
-    rfVon: 'Rückfrage {i} von {n} · zu: {s}',
+    rfVon: 'Rückfrage {i} von {n} · {s}',
     rfEine: 'Eine Antwort ist richtig.',
     rfMehrere: 'Mehrere Antworten sind richtig. Wählt alle passenden aus und prüft dann.',
     rfPruefen: 'Antwort prüfen',
     rfFalsch: 'Noch nicht ganz.',
     rfSperre: 'Lest den Tipp. Nächster Versuch in {zeit}.',
     rfHilfeTitel: 'Hilfe zu dieser Rückfrage',
-    meldungBestaetigt: '✓ Bestätigt: {s}',
+    meldungRunde: 'Alle Rückfragen gelöst. Bestätigt sind jetzt {k} Einträge.',
     // Fortschrittsring und Erfolgsfenster
     bestaetigt: 'Bestätigt: {k} von {n}',
     geschafft: 'Teil {nr} geschafft. Alle Einträge stimmen, und ihr habt sie begründet. Jetzt sind die Profi-Aufgaben frei.',
@@ -406,10 +409,13 @@ const CONTENT = {
        zuschnitt: Ist nur ein Feld des Schritts falsch, gelten diese Fragen (Nummern ab 0)
                   und, falls angegeben, dieser Denkanstoß, dieses Bild ('' = kein Bild) und diese Karten.
        denkanstoss und bild: Stufe 1, fragen: Stufe 2 (sie verraten das Ergebnis nicht),
+       pruefFrage: Nummer der Frage, die als Rückfrage kommt, wenn in diesem Schritt etwas nicht stimmt.
+                   So sieht jede Gruppe zu jedem Schritt genau eine Rückfrage, egal ob richtig oder falsch.
        ergebnis und ablauf: Stufe 3 (ablauf = Bildunterschriften der Animation). */
     schritte: [
       {
         id: 'S1',
+        pruefFrage: 0,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S1',
         kurz: 'Am Pol',
         aufgabe: 'Am Pol: Was macht die Luft, und welcher Luftdruck entsteht am Boden?',
@@ -439,8 +445,8 @@ const CONTENT = {
           {
             frage: 'Ein Mitschüler sagt: Kalte Luft ist leicht, deshalb steigt sie auf. Stimmt das?',
             optionen: [
-              { text: 'Ja.', rueckfrage: 'Vergleicht mit W1 und W2: Welche Luft steigt auf, welche sinkt ab?' },
-              { text: 'Nein. Ein Liter kalte Luft ist schwerer als ein Liter warme Luft.', richtig: true, ok: 'Stimmt. Überlegt, was das für die Luft über dem Pol heißt.' }
+              { text: 'Ja, kalte Luft ist leichter und dünner als warme Luft.', rueckfrage: 'Vergleicht mit W1 und W2: Welche Luft steigt auf, welche sinkt ab?' },
+              { text: 'Nein, kalte Luft ist dichter und schwerer als warme Luft.', richtig: true, ok: 'Stimmt. Überlegt, was das für die Luft über dem Pol heißt.' }
             ]
           },
           {
@@ -453,11 +459,12 @@ const CONTENT = {
           }
         ],
         ergebnis: 'Am Pol sinkt die kalte Luft ab. Am Boden entsteht ein Hochdruckgebiet: das [[polare Kältehoch|polares Kältehoch]].',
-        ablauf: ['Die Luft über dem Pol ist sehr kalt und schwer.', 'Sie sinkt ab (W2).', 'Am Boden entsteht ein Hoch: das polare Kältehoch (W8).'],
+        ablauf: ['Die Luft über dem Pol ist sehr kalt, also dichter und schwerer.', 'Sie sinkt ab (W2).', 'Am Boden entsteht ein Hoch: das polare Kältehoch (W8).'],
         skizze: 'S1'
       },
       {
         id: 'S2',
+        pruefFrage: 0,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S2',
         kurz: 'Vom Pol',
         // [LEHRKRAFT PRÜFEN] Aufgabe neutral formuliert (früher: "vom polaren Kältehoch"), bitte auch auf dem AB ändern
@@ -494,6 +501,7 @@ const CONTENT = {
       },
       {
         id: 'S3',
+        pruefFrage: 0,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S3',
         kurz: 'Bei 35°',
         aufgabe: 'Wohin strömt die Luft am Boden aus dem [[subtropischen Hochdruckgürtel|subtropischer Hochdruckgürtel]]?',
@@ -517,9 +525,9 @@ const CONTENT = {
           {
             frage: 'Auf die Spitze eines runden Hügels wird Wasser gegossen. Wohin fließt es?',
             optionen: [
-              { text: 'nur auf einer Seite hinunter', rueckfrage: 'Stellt euch einen runden Hügel vor. Warum sollte das Wasser nur eine Seite wählen?' },
-              { text: 'nach allen Seiten den Hang hinunter', richtig: true, ok: 'Stimmt. Übertragt das auf das Hoch in eurer Skizze.' },
-              { text: 'Es bleibt oben stehen.', rueckfrage: 'Wasser bleibt auf einer Spitze nicht stehen. Wohin fließt es?' }
+              { text: 'nur an einer Seite den Hang hinunter', rueckfrage: 'Stellt euch einen runden Hügel vor. Warum sollte das Wasser nur eine Seite wählen?' },
+              { text: 'an allen Seiten den Hang hinunter', richtig: true, ok: 'Stimmt. Übertragt das auf das Hoch in eurer Skizze.' },
+              { text: 'Es bleibt auf der Spitze stehen.', rueckfrage: 'Wasser bleibt auf einer Spitze nicht stehen. Wohin fließt es?' }
             ]
           }
         ],
@@ -529,6 +537,7 @@ const CONTENT = {
       },
       {
         id: 'S4',
+        pruefFrage: 1,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S4',
         kurz: 'Bei 65°',
         aufgabe: 'Was passiert bei etwa 65°?',
@@ -569,8 +578,8 @@ const CONTENT = {
           {
             frage: 'Ein Mitschüler sagt: Ein Tief entsteht nur dort, wo es warm ist. Stimmt das?',
             optionen: [
-              { text: 'Ja, ohne Wärme kein Tief.', rueckfrage: 'Lest W8 genau: Steht dort etwas von Wärme? Was ist die Bedingung für ein Tief?' },
-              { text: 'Nein. Ein Tief entsteht überall dort, wo Luft aufsteigt, auch wenn es kalt ist.', richtig: true, ok: 'Stimmt. Wendet das jetzt auf 65° an.' }
+              { text: 'Ja, ein Tief entsteht nur dort, wo warme Luft aufsteigt.', rueckfrage: 'Lest W8 genau: Steht dort etwas von Wärme? Was ist die Bedingung für ein Tief?' },
+              { text: 'Nein, ein Tief entsteht dort, wo Luft aufsteigt, ob warm oder kalt.', richtig: true, ok: 'Stimmt. Wendet das jetzt auf 65° an.' }
             ]
           }
         ],
@@ -583,6 +592,7 @@ const CONTENT = {
         // [LEHRKRAFT PRÜFEN] Neuer Schritt: die Strömung in der Höhe (früher Profi-Aufgabe P1).
         // Auf dem AB ergänzen. Hat der Schritt dort eine Nummer, sie hier bei nr eintragen, zum Beispiel 'S4b'.
         id: 'HOEHE',
+        pruefFrage: 0,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: '',
         kurz: 'In der Höhe',
         aufgabe: 'Wohin strömt die Luft in der Höhe? Ergänzt die Pfeile so, dass geschlossene Kreisläufe entstehen.',
@@ -605,17 +615,17 @@ const CONTENT = {
           {
             frage: 'In einem geschlossenen Kreislauf strömt die Luft am Boden in die eine Richtung. Wie strömt sie in der Höhe?',
             optionen: [
-              { text: 'in die Gegenrichtung', richtig: true, ok: 'Stimmt. Schaut auf die graue Passatzirkulation: Am Boden strömt die Luft in Richtung Äquator, in der Höhe in Richtung Pol.' },
+              { text: 'entgegengesetzt zur Richtung am Boden', richtig: true, ok: 'Stimmt. Schaut auf die graue Passatzirkulation: Am Boden strömt die Luft in Richtung Äquator, in der Höhe in Richtung Pol.' },
               { text: 'in dieselbe Richtung wie am Boden', rueckfrage: 'Schaut auf die graue Passatzirkulation: Strömt die Luft oben und unten in dieselbe Richtung?' },
-              { text: 'gar nicht, in der Höhe steht die Luft still', rueckfrage: 'Die Luft, die aufsteigt, muss oben weiterströmen. Wohin strömt sie in der grauen Passatzirkulation?' }
+              { text: 'gar nicht, oben steht die Luft still', rueckfrage: 'Die Luft, die aufsteigt, muss oben weiterströmen. Wohin strömt sie in der grauen Passatzirkulation?' }
             ]
           },
           {
             frage: 'Bei 35° sinkt Luft ab. Ein Teil davon kommt in der Höhe vom Äquator. Woher kommt der andere Teil?',
             optionen: [
-              { text: 'in der Höhe von 65°, wo Luft aufsteigt', richtig: true, ok: 'Stimmt. In welche Richtung strömt die Luft dann zwischen 65° und 35° in der Höhe?' },
-              { text: 'am Boden vom Pol', rueckfrage: 'Luft, die bei 35° absinkt, kommt von oben. Wo steigt in eurer Skizze Luft auf, die oben weiterströmen muss?' },
-              { text: 'aus dem Erdboden', rueckfrage: 'Luft kommt nicht aus dem Boden. Wo steigt in der Nähe Luft auf?' }
+              { text: 'aus der Höhe, von 65° her', richtig: true, ok: 'Stimmt. In welche Richtung strömt die Luft dann zwischen 65° und 35° in der Höhe?' },
+              { text: 'vom Boden, vom Pol her', rueckfrage: 'Luft, die bei 35° absinkt, kommt von oben. Wo steigt in eurer Skizze Luft auf, die oben weiterströmen muss?' },
+              { text: 'aus dem Erdboden darunter', rueckfrage: 'Luft kommt nicht aus dem Boden. Wo steigt in der Nähe Luft auf?' }
             ]
           },
           {
@@ -660,35 +670,35 @@ const CONTENT = {
         S1: {
           nach: [],
           mehrfach: true,
-          frage: 'Warum liegt am Pol am Boden ein Hoch? Wählt alle richtigen Begründungen.',
+          frage: 'Am Pol: Welche Aussagen erklären, was dort mit der Luft passiert und welcher Luftdruck am Boden entsteht? Wählt alle passenden aus.',
           optionen: [
-            { text: 'Die Luft über dem Pol ist sehr kalt und schwer.', richtig: true },
-            { text: 'Kalte Luft sinkt ab (W2).', richtig: true },
-            { text: 'Wo Luft absinkt, entsteht am Boden ein Hoch (W8).', richtig: true },
-            { text: 'Am Pol strömt die Luft am Boden zusammen.' },
-            { text: 'Kalte Luft steigt auf.' }
+            { text: 'Die Luft über dem Pol ist sehr kalt, also dichter und schwerer.', richtig: true },
+            { text: 'Weil die Luft dichter und schwerer ist, sinkt sie ab.', richtig: true },
+            { text: 'Wo Luft absinkt, entsteht am Boden ein Hochdruckgebiet.', richtig: true },
+            { text: 'Am Pol strömt die Luft am Boden von allen Seiten zusammen.' },
+            { text: 'Kalte Luft ist leichter als warme Luft und steigt auf.' }
           ],
-          tipp: 'Lest W2 und W8 noch einmal: Was macht kalte Luft, und was entsteht am Boden, wo Luft absinkt? Wählt nur Aussagen, die zu diesen Karten passen.',
-          ok: 'Stimmt. Kalte Luft sinkt ab, deshalb entsteht am Boden ein Hoch.'
+          tipp: 'Lest die Karten W2 und W8 noch einmal: Was macht kalte Luft, und was entsteht am Boden, wo Luft absinkt?',
+          ok: 'Stimmt. Kalte, dichte Luft sinkt ab, deshalb entsteht am Boden ein Hoch.'
         },
         S2: {
           nach: [],
-          frage: 'Ihr habt eingetragen: Vom Pol strömt die Luft am Boden in Richtung Äquator. Warum gibt es keine andere Möglichkeit?',
+          frage: 'Vom Pol aus: Warum kann die Luft am Boden nur in eine Richtung strömen?',
           optionen: [
             { text: 'Vom Pol aus führt jeder Weg in Richtung Äquator.', richtig: true, ok: 'Stimmt. Egal, wohin die Luft vom Pol aus strömt: Sie strömt immer in Richtung Äquator.' },
-            { text: 'Die Luft könnte auch weiter in Richtung Pol strömen.', rueckfrage: 'Die Luft ist schon am Pol. Kann sie von dort noch näher an den Pol strömen?' },
-            { text: 'Kalte Luft wird vom warmen Äquator angezogen.', rueckfrage: 'Luft wird nicht angezogen. Stellt euch vor, ihr steht auf dem Nordpol: Wohin führt jeder Weg?' }
+            { text: 'Vom Pol aus kann sie auch weiter zum Pol strömen.', rueckfrage: 'Die Luft ist schon am Pol. Kann sie von dort noch näher an den Pol strömen?' },
+            { text: 'Der warme Äquator zieht die kalte Luft an.', rueckfrage: 'Luft wird nicht angezogen. Stellt euch vor, ihr steht auf dem Nordpol: Wohin führt jeder Weg?' }
           ]
         },
         S3: {
           nach: [],
           mehrfach: true,
-          frage: 'Was gilt für die Luft, die im subtropischen Hochdruckgürtel absinkt? Wählt alle richtigen Aussagen.',
+          frage: 'Bei 35°: Welche Aussagen gelten für die Luft, die im subtropischen Hochdruckgürtel absinkt? Wählt alle passenden aus.',
           optionen: [
             { text: 'Ein Teil strömt am Boden in Richtung Äquator.', richtig: true },
-            { text: 'Ein Teil strömt am Boden in Richtung Pol.', richtig: true },
-            { text: 'Am Boden strömt sie vom Hoch weg (W9).', richtig: true },
-            { text: 'Sie bleibt am Boden im Hoch liegen.' },
+            { text: 'Ein anderer Teil strömt am Boden in Richtung Pol.', richtig: true },
+            { text: 'Am Boden strömt sie nach allen Seiten vom Hoch weg.', richtig: true },
+            { text: 'Sie bleibt am Boden im Hochdruckgürtel liegen.' },
             { text: 'Sie strömt am Boden nur in Richtung Äquator.' }
           ],
           tipp: 'Stellt euch das Hoch als Hügel vor, von dem Luft herunterfließt. Fließt sie nur auf einer Seite hinunter?',
@@ -696,22 +706,22 @@ const CONTENT = {
         },
         S4: {
           nach: ['S2', 'S3'],
-          frage: 'Warum liegt bei 65° ein Tief, obwohl es dort kalt ist?',
+          frage: 'Bei 65°: Was erklärt den Luftdruck am Boden dort?',
           optionen: [
-            { text: 'Am Boden strömt Luft von zwei Seiten zusammen und muss aufsteigen (W10). Wo Luft aufsteigt, entsteht am Boden ein Tief (W8).', richtig: true, ok: 'Stimmt. Das Tief entsteht durch das Zusammenströmen, nicht durch Wärme.' },
-            { text: 'Bei 65° ist es warm, deshalb steigt die Luft auf.', rueckfrage: 'Bei 65° ist es kalt. Was passiert mit der Luft, die am Boden von beiden Seiten ankommt?' },
-            { text: 'Bei 65° sinkt die Luft ab und erzeugt ein Tief.', rueckfrage: 'Lest W8: Wo Luft absinkt, entsteht ein Hoch. Was macht die Luft bei 65° in eurer Skizze?' }
+            { text: 'Luft strömt am Boden zusammen, steigt auf, und am Boden entsteht ein Tief.', richtig: true, ok: 'Stimmt. Das Tief entsteht durch das Zusammenströmen, nicht durch Wärme.' },
+            { text: 'Es ist dort warm, die Luft steigt auf, und am Boden entsteht ein Tief.', rueckfrage: 'Bei 65° ist es kalt. Was passiert mit der Luft, die am Boden von beiden Seiten ankommt?' },
+            { text: 'Luft strömt am Boden zusammen, sinkt ab, und am Boden entsteht ein Tief.', rueckfrage: 'Kann Luft, die am Boden zusammenströmt, nach unten ausweichen? Und was entsteht am Boden, wo Luft absinkt (W8)?' }
           ]
         },
         HOEHE: {
           nach: ['S1', 'S4'],
           mehrfach: true,
-          frage: 'Warum strömt die Luft in der Höhe so, wie ihr es eingetragen habt? Wählt alle richtigen Aussagen.',
+          frage: 'In der Höhe: Welche Aussagen erklären die Strömung dort? Wählt alle passenden aus.',
           optionen: [
             { text: 'Die Luft, die bei 65° aufsteigt, muss in der Höhe weiterströmen.', richtig: true },
-            { text: 'Sie strömt dorthin, wo Luft absinkt: zum Pol und bis 35°.', richtig: true },
+            { text: 'Sie strömt in der Höhe zu den Stellen, an denen Luft absinkt.', richtig: true },
             { text: 'So entstehen geschlossene Kreisläufe wie bei der Passatzirkulation.', richtig: true },
-            { text: 'In der Höhe strömt die Luft überall in Richtung Pol.' },
+            { text: 'In der Höhe strömt die Luft überall nur in Richtung Pol.' },
             { text: 'In der Höhe strömt die Luft in dieselbe Richtung wie am Boden.' }
           ],
           tipp: 'Verfolgt den Weg der Luft: Wo steigt sie auf, wo sinkt sie ab? Vergleicht mit der grauen Passatzirkulation.',
@@ -720,38 +730,38 @@ const CONTENT = {
         // Rückfragen zu einzelnen Feldern (wenn im selben Schritt ein anderes Feld noch nicht stimmt)
         'pol-luft': {
           nach: [],
-          frage: 'Ihr habt eingetragen: Am Pol sinkt die Luft ab. Warum?',
+          frage: 'Am Pol: Was ist der Grund für die Luftbewegung dort?',
           optionen: [
-            { text: 'Die Luft über dem Pol ist sehr kalt und schwer. Kalte Luft sinkt ab (W2).', richtig: true, ok: 'Stimmt.' },
-            { text: 'Am Pol strömt die Luft am Boden zusammen.', rueckfrage: 'Denkt an die Temperatur: Am Pol ist es sehr kalt. Was sagt Karte W2 über kalte Luft?' },
-            { text: 'Warme Luft sinkt ab, und am Pol ist es warm.', rueckfrage: 'Am Pol ist es sehr kalt (Buch S. 39). Was sagt Karte W2 über kalte Luft?' }
+            { text: 'Die Luft ist sehr kalt und deshalb dichter und schwerer.', richtig: true, ok: 'Stimmt. Kalte, dichte Luft sinkt ab.' },
+            { text: 'Die Luft strömt am Boden von allen Seiten zusammen.', rueckfrage: 'Denkt an die Temperatur: Am Pol ist es sehr kalt. Was sagt Karte W2?' },
+            { text: 'Die Luft ist warm und deshalb leichter als ihre Umgebung.', rueckfrage: 'Am Pol ist es sehr kalt (Buch S. 39). Was sagt Karte W2?' }
           ]
         },
         '65-luft': {
           nach: ['S2', 'S3'],
-          frage: 'Ihr habt eingetragen: Bei 65° steigt die Luft auf. Warum, obwohl es dort kalt ist?',
+          frage: 'Bei 65°: Was ist der Grund für die Luftbewegung dort?',
           optionen: [
-            { text: 'Am Boden strömt Luft von zwei Seiten zusammen. Sie kann nur nach oben ausweichen.', richtig: true, ok: 'Stimmt.' },
-            { text: 'Bei 65° ist es besonders warm.', rueckfrage: 'Bei 65° ist es kalt. Schaut auf eure Bodenpfeile: Was passiert mit der Luft, die dort ankommt?' },
-            { text: 'Kalte Luft steigt immer auf.', rueckfrage: 'Lest Karte W2: Was macht kalte Luft? Der Grund muss also ein anderer sein. Schaut auf eure Bodenpfeile.' }
+            { text: 'Am Boden strömt dort Luft von zwei Seiten zusammen.', richtig: true, ok: 'Stimmt. Sie kann nur nach oben ausweichen.' },
+            { text: 'Die Luft ist dort besonders warm und deshalb leicht.', rueckfrage: 'Bei 65° ist es kalt. Schaut auf eure Bodenpfeile: Was passiert mit der Luft, die dort ankommt?' },
+            { text: 'Die Luft ist dort kalt, und kalte Luft steigt auf.', rueckfrage: 'Lest Karte W2: Was macht kalte Luft? Der Grund muss also ein anderer sein. Schaut auf eure Bodenpfeile.' }
           ]
         },
         'hoehe-mitte': {
           nach: ['S4'],
-          frage: 'Ihr habt eingetragen: Zwischen 35° und 65° strömt die Luft in der Höhe in Richtung Äquator. Warum?',
+          frage: 'Zwischen 35° und 65°: Was bestimmt die Richtung der Luft in der Höhe?',
           optionen: [
-            { text: 'Bei 65° steigt Luft auf, bei 35° sinkt sie ab. Dazwischen strömt sie oben von 65° nach 35°.', richtig: true, ok: 'Stimmt.' },
+            { text: 'Sie strömt von dort, wo sie aufsteigt, dorthin, wo sie absinkt.', richtig: true, ok: 'Stimmt.' },
             { text: 'In der Höhe strömt die Luft immer in Richtung Äquator.', rueckfrage: 'Schaut auf die graue Passatzirkulation: In welche Richtung strömt die Luft dort in der Höhe?' },
-            { text: 'Die Luft strömt in der Höhe in dieselbe Richtung wie am Boden.', rueckfrage: 'Vergleicht mit euren Bodenpfeilen zwischen 35° und 65°: Zeigen sie in dieselbe Richtung?' }
+            { text: 'In der Höhe strömt sie in dieselbe Richtung wie am Boden.', rueckfrage: 'Vergleicht mit euren Bodenpfeilen zwischen 35° und 65°: Zeigen sie in dieselbe Richtung?' }
           ]
         },
         'hoehe-polar': {
           nach: ['S1', 'S4'],
-          frage: 'Ihr habt eingetragen: Zwischen 65° und dem Pol strömt die Luft in der Höhe in Richtung Pol. Warum?',
+          frage: 'Zwischen 65° und dem Pol: Was bestimmt die Richtung der Luft in der Höhe?',
           optionen: [
-            { text: 'Bei 65° steigt Luft auf, am Pol sinkt sie ab. Dazwischen strömt sie oben von 65° zum Pol.', richtig: true, ok: 'Stimmt.' },
-            { text: 'Warme Luft strömt in der Höhe immer zum Pol.', rueckfrage: 'Bei 65° ist es kalt. Wo steigt die Luft auf, und wo sinkt sie ab?' },
-            { text: 'Am Pol steigt die Luft auf und saugt Luft an.', rueckfrage: 'Schaut in eure Skizze: Steigt die Luft am Pol auf oder sinkt sie ab?' }
+            { text: 'Sie strömt von dort, wo sie aufsteigt, dorthin, wo sie absinkt.', richtig: true, ok: 'Stimmt.' },
+            { text: 'Warme Luft strömt in der Höhe immer in Richtung Pol.', rueckfrage: 'Bei 65° ist es kalt. Wo steigt die Luft auf, und wo sinkt sie ab?' },
+            { text: 'Am Pol steigt Luft auf und saugt Luft aus der Höhe an.', rueckfrage: 'Schaut in eure Skizze: Steigt die Luft am Pol auf oder sinkt sie ab?' }
           ]
         }
       }
@@ -770,8 +780,8 @@ const CONTENT = {
         ok: 'Stimmt: die [[tropische Zelle]], die [[Zelle der gemäßigten Breiten]] und die [[polare Zelle]].',
         frage: 'Vergleicht, wie die Luft in den drei Kreisläufen läuft. Was fällt auf?',
         optionen: [
-          { text: 'In allen drei Zellen läuft die Luft gleich herum.', rueckfrage: 'Verfolgt die Pfeile: Auf welcher Seite steigt die Luft in der tropischen Zelle auf, auf welcher Seite in der Zelle der gemäßigten Breiten?' },
-          { text: 'In der Zelle der gemäßigten Breiten läuft die Luft andersherum: Sie steigt auf der Seite zum Pol hin auf und sinkt auf der Seite zum Äquator hin ab.', richtig: true, ok: 'Stimmt. Die tropische Zelle wird von der warmen Luft am Äquator angetrieben, die polare Zelle von der kalten Luft am Pol. Die Zelle dazwischen läuft wie ein Zahnrad zwischen zwei anderen Zahnrädern andersherum.' },
+          { text: 'In allen drei Zellen läuft die Luft in derselben Richtung herum.', rueckfrage: 'Verfolgt die Pfeile: Auf welcher Seite steigt die Luft in der tropischen Zelle auf, auf welcher Seite in der Zelle der gemäßigten Breiten?' },
+          { text: 'In der Zelle der gemäßigten Breiten läuft die Luft andersherum als in den anderen.', richtig: true, ok: 'Stimmt. Sie steigt auf der Seite zum Pol hin auf und sinkt auf der Seite zum Äquator hin ab. Die tropische Zelle wird von der warmen Luft am Äquator angetrieben, die polare Zelle von der kalten Luft am Pol. Die Zelle dazwischen läuft wie ein Zahnrad zwischen zwei anderen Zahnrädern andersherum.' },
           { text: 'In der polaren Zelle läuft die Luft andersherum als in den beiden anderen.', rueckfrage: 'Vergleicht die polare Zelle mit der tropischen Zelle: Steigt die Luft jeweils auf der Seite zum Äquator hin auf oder auf der Seite zum Pol hin?' }
         ]
       },
@@ -856,6 +866,7 @@ const CONTENT = {
     schritte: [
       {
         id: 'S5',
+        pruefFrage: 1,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S5',
         kurz: 'Passat',
         aufgabe: 'Die Luft strömt vom subtropischen Hochdruckgürtel in Richtung Äquator. In welche Richtung wird sie abgelenkt, und aus welcher Richtung kommt der Wind dann?',
@@ -895,6 +906,7 @@ const CONTENT = {
       },
       {
         id: 'S6',
+        pruefFrage: 0,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S6',
         kurz: '65° bis 80°',
         // [LEHRKRAFT PRÜFEN] Aufgabe, Fragen und Rückfragen von S6 und S7 sind nach dem Muster von S5 formuliert.
@@ -935,6 +947,7 @@ const CONTENT = {
       },
       {
         id: 'S7',
+        pruefFrage: 1,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S7',
         kurz: '35° bis 65°',
         aufgabe: 'Die Luft strömt vom subtropischen Hochdruckgürtel in Richtung Pol. In welche Richtung wird sie abgelenkt, und aus welcher Richtung kommt der Wind dann?',
@@ -960,8 +973,8 @@ const CONTENT = {
           {
             frage: 'Ein Nordwind weht nach Norden. Stimmt das?',
             optionen: [
-              { text: 'Ja.', rueckfrage: 'Lest W12 noch einmal: Wird ein Wind nach seinem Ziel oder nach seiner Herkunft benannt?' },
-              { text: 'Nein. Ein Nordwind kommt aus Norden und weht nach Süden.', richtig: true, ok: 'Stimmt. Achtet bei eurem eigenen Pfeil genauso auf die Herkunft.' }
+              { text: 'Ja, ein Nordwind weht in Richtung Norden.', rueckfrage: 'Lest W12 noch einmal: Wird ein Wind nach seinem Ziel oder nach seiner Herkunft benannt?' },
+              { text: 'Nein, ein Nordwind weht in Richtung Süden.', richtig: true, ok: 'Stimmt. Achtet bei eurem eigenen Pfeil genauso auf die Herkunft.' }
             ]
           }
         ],
@@ -971,6 +984,7 @@ const CONTENT = {
       },
       {
         id: 'S8',
+        pruefFrage: 0,   // diese Frage dient als Rückfrage, wenn hier etwas noch nicht stimmt
         nr: 'S8',
         kurz: 'Bamberg',
         aufgabe: 'Bamberg liegt bei knapp 50° N. In welchem [[Windgürtel]] liegt es, und woher weht dort meist der Wind?',
@@ -1059,57 +1073,57 @@ const CONTENT = {
         S5: {
           nach: ['S6'],
           mehrfach: true,
-          frage: 'Warum kommt der Passat auf der Nordhalbkugel aus Nordosten? Wählt alle richtigen Begründungen.',
+          frage: 'Zwischen 0° und 23,5°: Welche Aussagen erklären die Windrichtung dort? Wählt alle passenden aus.',
           optionen: [
             { text: 'Die Luft strömt vom subtropischen Hochdruckgürtel in Richtung Äquator.', richtig: true },
-            { text: 'Wer auf der Nordhalbkugel in Richtung Äquator geht, geht nach Süden und hat rechts Westen: Die Luft wird nach Westen abgelenkt (W11).', richtig: true },
-            { text: 'Winde werden nach ihrer Herkunft benannt (W12).', richtig: true },
-            { text: 'Die Luft wird nach Osten abgelenkt.' },
-            { text: 'Der Passat kommt direkt vom Pol.' }
+            { text: 'In Richtung Äquator geht es nach Süden, rechts davon liegt Westen.', richtig: true },
+            { text: 'Winde werden nach der Richtung benannt, aus der sie kommen.', richtig: true },
+            { text: 'In Richtung Äquator geht es nach Süden, rechts davon liegt Osten.' },
+            { text: 'Winde werden nach der Richtung benannt, in die sie wehen.' }
           ],
           tipp: 'Geht den Weg der Luft nach: Wohin strömt sie, wohin wird sie abgelenkt, und wonach wird ein Wind benannt? Das Richtungswerkzeug hilft.',
           ok: 'Stimmt. Die Luft strömt nach Südwesten und kommt deshalb aus Nordosten.'
         },
         S6: {
           nach: ['S5'],
-          frage: 'Die Luft strömt vom polaren Kältehoch in Richtung Äquator. Warum heißen die Winde dort polare Ostwinde?',
+          frage: 'Zwischen 65° und 80°: Was erklärt die Windrichtung dort?',
           optionen: [
-            { text: 'Die Luft wird nach rechts, also nach Westen, abgelenkt und kommt deshalb aus Nordosten bis Osten.', richtig: true, ok: 'Stimmt.' },
-            { text: 'Die Luft strömt nach Osten.', rueckfrage: 'Ein Ostwind kommt aus Osten (W12). Wohin strömt er also?' },
-            { text: 'Am Pol gibt es keine Ablenkung, der Wind kommt aus Norden.', rueckfrage: 'Lest W11: Gilt die Ablenkung auf der ganzen Nordhalbkugel?' }
+            { text: 'Die Luft strömt nach Süden und wird nach rechts, also nach Westen, abgelenkt.', richtig: true, ok: 'Stimmt. Sie strömt nach Westen bis Südwesten und kommt deshalb aus Nordosten bis Osten.' },
+            { text: 'Die Luft strömt nach Süden und wird nach links, also nach Osten, abgelenkt.', rueckfrage: 'Lest W11: In welche Richtung wird auf der Nordhalbkugel abgelenkt?' },
+            { text: 'Die Luft strömt nach Süden und wird so nahe am Pol nicht abgelenkt.', rueckfrage: 'Lest W11: Gilt die Ablenkung auf der ganzen Nordhalbkugel?' }
           ]
         },
         S7: {
           nach: [],
           mehrfach: true,
-          frage: 'Was erklärt die Windrichtung zwischen 35° und 65°? Wählt alle richtigen Aussagen.',
+          frage: 'Zwischen 35° und 65°: Welche Aussagen erklären die Windrichtung dort? Wählt alle passenden aus.',
           optionen: [
             { text: 'Die Luft strömt am Boden vom Hoch zum Tief, also in Richtung Pol.', richtig: true },
-            { text: 'Wer auf der Nordhalbkugel in Richtung Pol geht, geht nach Norden und hat rechts Osten: Die Luft wird nach Osten abgelenkt.', richtig: true },
-            { text: 'Die Luft strömt nach Nordosten und kommt deshalb aus Südwesten bis Westen.', richtig: true },
-            { text: 'Ein Wind weht in die Richtung, nach der er benannt ist.' },
-            { text: 'Die Luft strömt am Boden in Richtung Äquator.' }
+            { text: 'In Richtung Pol geht es nach Norden, rechts davon liegt Osten.', richtig: true },
+            { text: 'Winde werden nach der Richtung benannt, aus der sie kommen.', richtig: true },
+            { text: 'In Richtung Pol geht es nach Norden, rechts davon liegt Westen.' },
+            { text: 'Die Luft strömt am Boden vom Tief zum Hoch, also in Richtung Äquator.' }
           ],
           tipp: 'Wohin strömt die Luft zwischen 35° und 65° am Boden? Stellt euch in diese Richtung: Wo ist rechts? Benannt wird der Wind nach seiner Herkunft.',
           ok: 'Stimmt.'
         },
         S8: {
           nach: ['S7'],
-          frage: 'Welche Begründung erklärt, warum in Bamberg meist Westwind weht?',
+          frage: 'Bamberg: Was erklärt die Windrichtung dort?',
           optionen: [
-            { text: 'Bamberg liegt bei knapp 50° N zwischen subtropischem Hochdruckgürtel und subpolarer Tiefdruckrinne, also in der Westwindzone.', richtig: true, ok: 'Stimmt.' },
-            { text: 'Bamberg liegt östlich des Atlantiks, deshalb kommt der Wind vom Meer.', rueckfrage: 'Die Lage zum Meer erklärt nicht die Windrichtung. Zwischen welchen Druckgürteln liegt Bamberg?' },
-            { text: 'In Bamberg strömt die Luft vom polaren Kältehoch in Richtung Äquator.', rueckfrage: 'Das polare Kältehoch liegt zwischen 80° und dem Pol. Liegt Bamberg so nah am Pol?' }
+            { text: 'Bamberg liegt zwischen subtropischem Hochdruckgürtel und subpolarer Tiefdruckrinne.', richtig: true, ok: 'Stimmt.' },
+            { text: 'Bamberg liegt zwischen subpolarer Tiefdruckrinne und polarem Kältehoch.', rueckfrage: 'Das polare Kältehoch liegt zwischen 80° und dem Pol. Liegt Bamberg so nah am Pol?' },
+            { text: 'Bamberg liegt östlich des Atlantiks, deshalb kommt der Wind vom Meer.', rueckfrage: 'Die Lage zum Meer erklärt nicht die Windrichtung. Zwischen welchen Druckgürteln liegt Bamberg?' }
           ]
         },
         // Rückfrage zu einem einzelnen Feld (wenn die Windrichtung von Bamberg noch nicht stimmt)
         'bamberg-guertel': {
           nach: [],
-          frage: 'Ihr habt eingetragen: Bamberg liegt in der Zone der Westwinde. Woran erkennt ihr das?',
+          frage: 'Bamberg: Woran erkennt ihr den Windgürtel?',
           optionen: [
-            { text: 'Bamberg liegt bei knapp 50° N zwischen subtropischem Hochdruckgürtel und subpolarer Tiefdruckrinne.', richtig: true, ok: 'Stimmt.' },
-            { text: 'In Bamberg ist es kühl, deshalb gehört es zur Zone der Westwinde.', rueckfrage: 'Die Temperatur bestimmt den Windgürtel nicht. Zwischen welchen Druckgürteln liegt Bamberg?' },
-            { text: 'Bamberg liegt nahe am Pol.', rueckfrage: 'Bamberg liegt bei knapp 50° N. Liegt das zwischen 35° und 65° oder nahe am Pol?' }
+            { text: 'An der Lage zwischen subtropischem Hochdruckgürtel und subpolarer Tiefdruckrinne.', richtig: true, ok: 'Stimmt.' },
+            { text: 'An der Temperatur, denn in Bamberg ist es meistens eher kühl und feucht.', rueckfrage: 'Die Temperatur bestimmt den Windgürtel nicht. Zwischen welchen Druckgürteln liegt Bamberg?' },
+            { text: 'An der Lage zwischen subpolarer Tiefdruckrinne und polarem Kältehoch.', rueckfrage: 'Bamberg liegt bei knapp 50° N. Liegt das zwischen 35° und 65° oder nahe am Pol?' }
           ]
         }
       }
@@ -1316,7 +1330,7 @@ const CONTENT = {
         tipp: 'Der Passat strömt in Richtung Äquator und wird auf der Nordhalbkugel nach rechts abgelenkt. Benannt wird er nach seiner Herkunft.' },
       { id: 'q14', niveau: 'basis', typ: 'auswahl', thema: 'passat',
         frage: 'Was passiert mit aufsteigender Luft (Karten W4 und W7)?',
-        optionen: ['Sie kühlt ab, Wolken und Niederschlag entstehen.', 'Sie erwärmt sich, Wolken lösen sich auf.', 'Sie wird schwerer und sinkt sofort wieder ab.', 'Sie nimmt mehr Wasserdampf auf.'], richtig: 0,
+        optionen: ['Sie kühlt ab, Wasserdampf kann kondensieren.', 'Sie erwärmt sich, Wolken lösen sich auf.', 'Sie wird schwerer und sinkt gleich wieder ab.', 'Sie kann jetzt mehr Wasserdampf speichern.'], richtig: 0,
         erklaerung: 'Aufsteigende Luft kühlt ab. Wolken und Niederschlag entstehen, zum Beispiel über der äquatorialen Tiefdruckrinne.',
         tipp: 'Lies die Karten W4 und W7: Was passiert mit der Temperatur aufsteigender Luft, und was folgt daraus für den Wasserdampf?' },
       { id: 'q15', niveau: 'basis', typ: 'luecken', thema: 'lage',
@@ -1331,11 +1345,11 @@ const CONTENT = {
       { id: 'q16', niveau: 'standard', typ: 'auswahl', thema: 'hochtief',
         frage: 'Warum liegt am Pol am Boden ein Hoch?',
         optionen: ['Die kalte Luft sinkt ab.', 'Die kalte Luft steigt auf.', 'Am Pol strömt die Luft am Boden zusammen.', 'Am Pol ist die Luft besonders feucht.'], richtig: 0,
-        erklaerung: 'Sehr kalte Luft ist schwer und sinkt ab (W2). Wo Luft absinkt, entsteht am Boden ein Hoch (W8): das polare Kältehoch.',
+        erklaerung: 'Sehr kalte Luft ist dichter und schwerer und sinkt ab (W2). Wo Luft absinkt, entsteht am Boden ein Hoch (W8): das polare Kältehoch.',
         tipp: 'Was macht kalte Luft (W2), und was entsteht am Boden, wo Luft absinkt (W8)?' },
       { id: 'q17', niveau: 'standard', typ: 'richtigfalsch', thema: 'hochtief',
         aussage: 'Bei 65° liegt ein Tief, weil es dort warm ist.', richtig: false,
-        begruendungen: ['Bei 65° ist es kalt. Die Luft steigt auf, weil sie am Boden zusammenströmt.', 'Bei 65° ist es warm, aber die Luft sinkt ab.', 'Bei 65° gibt es keinen Luftdruck.'], begruendungRichtig: 0,
+        begruendungen: ['Dort ist es kalt; die Luft steigt auf, weil sie am Boden zusammenströmt.', 'Dort ist es warm; die Luft sinkt ab, weil sie am Boden zusammenströmt.', 'Dort ist es kalt; die Luft sinkt ab, weil sie dichter und schwerer ist.'], begruendungRichtig: 0,
         erklaerung: 'Das Tief bei 65° entsteht nicht durch Wärme. Luft aus dem polaren Kältehoch und aus dem subtropischen Hochdruckgürtel strömt zusammen und muss aufsteigen (W10). So entsteht die subpolare Tiefdruckrinne.',
         tipp: 'Ist es bei 65° warm? Was passiert mit Luft, die am Boden von zwei Seiten zusammenströmt?' },
       { id: 'q18', niveau: 'standard', typ: 'auswahl', thema: 'hochtief',
@@ -1345,7 +1359,7 @@ const CONTENT = {
         tipp: 'Luft kann nicht verschwinden und nicht in den Boden. Welcher Weg bleibt ihr?' },
       { id: 'q19', niveau: 'standard', typ: 'auswahl', thema: 'stroemung',
         frage: 'Wohin strömt die Luft am Boden aus dem subtropischen Hochdruckgürtel?',
-        optionen: ['in Richtung Äquator und in Richtung Pol', 'nur in Richtung Äquator', 'nur in Richtung Pol', 'gar nicht'], richtig: 0,
+        optionen: ['in Richtung Äquator und Pol', 'nur in Richtung Äquator', 'nur in Richtung Pol', 'gar nicht, sie bleibt dort liegen'], richtig: 0,
         erklaerung: 'Aus einem Hoch strömt Luft am Boden nach allen Seiten weg (W9). Ein Teil strömt als Passat in Richtung Äquator, ein Teil in Richtung Pol.',
         tipp: 'Stell dir das Hoch wie einen Hügel vor, von dem Luft herunterfließt. Gibt es nur einen Weg?' },
       { id: 'q20', niveau: 'standard', typ: 'auswahl', thema: 'ablenkung',
@@ -1355,12 +1369,12 @@ const CONTENT = {
         tipp: 'In Richtung Pol heißt auf der Nordhalbkugel: nach Norden. Wo ist rechts, wenn du nach Norden gehst?' },
       { id: 'q21', niveau: 'standard', typ: 'richtigfalsch', thema: 'benennung',
         aussage: 'Ein Westwind weht nach Westen.', richtig: false,
-        begruendungen: ['Winde werden nach ihrer Herkunft benannt. Ein Westwind kommt aus Westen und weht nach Osten.', 'Westwinde wehen immer nach Süden.', 'Ein Westwind weht nach Westen, weil er nach rechts abgelenkt wird.'], begruendungRichtig: 0,
+        begruendungen: ['Winde heißen nach ihrer Herkunft: Ein Westwind weht nach Osten.', 'Winde heißen nach ihrem Ziel: Ein Westwind weht nach Westen.', 'Westwinde werden nach rechts abgelenkt und wehen nach Süden.'], begruendungRichtig: 0,
         erklaerung: 'Der Name verrät die Herkunft (W12). Ein Westwind kommt aus Westen und weht nach Osten.',
         tipp: 'Wird ein Wind nach seinem Ziel oder nach seiner Herkunft benannt?' },
       { id: 'q22', niveau: 'standard', typ: 'auswahl', thema: 'ablenkung',
         frage: 'Warum weht der Passat auf der Nordhalbkugel aus Nordosten und nicht aus Norden?',
-        optionen: ['Die Luft strömt in Richtung Äquator und wird nach rechts, also nach Westen, abgelenkt.', 'Die Luft strömt in Richtung Äquator und wird nach links abgelenkt.', 'Der Passat beginnt am Pol.', 'Im Osten ist es wärmer als im Westen.'], richtig: 0,
+        optionen: ['Die Luft strömt in Richtung Äquator und wird nach rechts, also nach Westen, abgelenkt.', 'Die Luft strömt in Richtung Äquator und wird nach links, also nach Osten, abgelenkt.', 'Die Luft kommt vom Pol her und wird unterwegs immer weiter nach Westen gelenkt.', 'Im Osten ist es wärmer als im Westen, deshalb strömt die Luft von dort.'], richtig: 0,
         erklaerung: 'Ohne Ablenkung käme der Wind aus Norden. Die Ablenkung nach rechts, also nach Westen, macht daraus eine Strömung nach Südwesten. Der Wind kommt also aus Nordosten.',
         tipp: 'Ohne Ablenkung käme der Passat aus Norden. Was ändert die Ablenkung nach rechts?' },
       { id: 'q23', niveau: 'standard', typ: 'luecken', thema: 'passat',
@@ -1379,7 +1393,7 @@ const CONTENT = {
         tipp: 'Gehe den Weg der Luft Schritt für Schritt nach, wie in der Hilfe S1 bis S4. Achte auf die Artikel vor den Lücken.' },
       { id: 'q25', niveau: 'standard', typ: 'auswahl', thema: 'waerme',
         frage: 'Warum hat das Nordpolargebiet mit Wärmetransport −23 °C statt −44 °C?',
-        optionen: ['Luft und Meeresströmungen bringen Wärme aus den Tropen polwärts.', 'Am Pol fallen die Sonnenstrahlen steiler ein.', 'Kalte Luft steigt am Pol auf und erwärmt sich.', 'Das Eis am Pol erzeugt Wärme.'], richtig: 0,
+        optionen: ['Luft und Meeresströmungen bringen Wärme aus den Tropen polwärts.', 'Am Pol fallen die Sonnenstrahlen steiler ein als in den Tropen.', 'Kalte Luft steigt am Pol auf und erwärmt sich dabei.', 'Das Eis am Pol speichert Wärme und gibt sie wieder ab.'], richtig: 0,
         erklaerung: 'Luft und Meeresströmungen transportieren Wärme von den Tropen in Richtung der Pole. Deshalb ist es am Pol wärmer, als es ohne Wärmetransport wäre.',
         tipp: 'Wärme wird von dort, wo es zu warm ist, dorthin gebracht, wo es zu kalt ist. Was transportiert sie?' },
       { id: 'q26', niveau: 'standard', typ: 'auswahl', thema: 'waerme',
@@ -1389,7 +1403,7 @@ const CONTENT = {
         tipp: 'Mit Wärmetransport ist es in den Tropen kühler. Wird dort Wärme hinzugefügt oder weggebracht?' },
       { id: 'q27', niveau: 'standard', typ: 'auswahl', thema: 'waerme',
         frage: 'Warum erhalten die Tropen mehr Sonnenenergie pro Fläche als die Polargebiete?',
-        optionen: ['Die Sonnenstrahlen fallen steiler ein und verteilen sich auf eine kleinere Fläche.', 'Die Tropen liegen näher an der Sonne.', 'In den Tropen gibt es weniger Wolken.', 'Am Äquator ist die Luft dünner.'], richtig: 0,
+        optionen: ['Die Strahlen fallen steiler ein und treffen auf weniger Fläche.', 'Die Tropen liegen näher an der Sonne als die Polargebiete.', 'In den Tropen gibt es weniger Wolken, die Strahlung abhalten.', 'Am Äquator ist die Luft dünner und lässt mehr Strahlung durch.'], richtig: 0,
         erklaerung: 'Wegen der Kugelgestalt der Erde treffen die Strahlen in den Tropen steiler auf. Dieselbe Energie verteilt sich auf eine kleinere Fläche. Der Abstand zur Sonne spielt dabei keine Rolle.',
         tipp: 'Denke an die Kugelgestalt der Erde: Wie treffen die Sonnenstrahlen in den Tropen und an den Polen auf?' },
       { id: 'q28', niveau: 'standard', typ: 'auswahl', thema: 'ablenkung',
@@ -1399,12 +1413,12 @@ const CONTENT = {
         tipp: 'In Richtung Äquator heißt auf der Nordhalbkugel: nach Süden. Wo ist dann rechts, und woher kommt die Luft?' },
       { id: 'q29', niveau: 'standard', typ: 'richtigfalsch', thema: 'hochtief',
         aussage: 'Im subtropischen Hochdruckgürtel ist die Luft warm. Trotzdem herrscht dort hoher Luftdruck.', richtig: true,
-        begruendungen: ['Dort sinkt Luft ab, die in der Höhe vom Äquator her heranströmt.', 'Warme Luft erzeugt immer hohen Luftdruck.', 'Dort steigt die Luft besonders stark auf.'], begruendungRichtig: 0,
+        begruendungen: ['Dort sinkt Luft ab, die in der Höhe vom Äquator her heranströmt.', 'Warme Luft erzeugt am Boden immer einen hohen Luftdruck.', 'Dort steigt die Luft auf, die vom Äquator her heranströmt.'], begruendungRichtig: 0,
         erklaerung: 'In der Höhe strömt Luft aus der tropischen Zelle heran und sinkt ab. Wo Luft absinkt, entsteht am Boden ein Hoch (W8), auch wenn es warm ist.',
         tipp: 'Karte W8: Was ist die Bedingung für ein Hoch? Kommt darin Wärme vor?' },
       { id: 'q30', niveau: 'standard', typ: 'auswahl', thema: 'waerme',
         frage: 'Welche Aufgabe hat der Kreislauf der Luft auf der Erde?',
-        optionen: ['Er transportiert Wärme von den Tropen zu den Polen.', 'Er transportiert Wärme von den Polen zu den Tropen.', 'Er sorgt dafür, dass es überall gleich warm ist.', 'Er verhindert Niederschlag.'], richtig: 0,
+        optionen: ['Er transportiert Wärme von den Tropen zu den Polen.', 'Er transportiert Wärme von den Polen zu den Tropen.', 'Er sorgt dafür, dass es überall gleich warm ist.', 'Er verhindert, dass in den Tropen Regen fällt.'], richtig: 0,
         erklaerung: 'Die Luft gleicht die Unterschiede teilweise aus: Sie bringt Wärme aus den Tropen polwärts. Ganz gleich warm wird es aber nicht.',
         tipp: 'Die Tropen haben einen Wärmeüberschuss, die Pole einen Wärmemangel. Was gleicht die Luft aus?' },
       { id: 'q31', niveau: 'standard', typ: 'auswahl', thema: 'waerme',
@@ -1446,17 +1460,17 @@ const CONTENT = {
         tipp: 'In Bamberg strömt die Luft am Boden vom subtropischen Hochdruckgürtel zur subpolaren Tiefdruckrinne. Woher kommt sie ohne Ablenkung?' },
       { id: 'q38', niveau: 'profi', typ: 'richtigfalsch', thema: 'sued',
         aussage: 'Luft, die polwärts strömt, wird zum Westwind. Das gilt auf beiden Halbkugeln.', richtig: true,
-        begruendungen: ['Polwärts heißt auf der Nordhalbkugel nach Norden, Ablenkung nach rechts; auf der Südhalbkugel nach Süden, Ablenkung nach links. Beide Male strömt die Luft nach Osten.', 'Auf beiden Halbkugeln wird die Luft nach rechts abgelenkt.', 'Polwärts strömende Luft wird gar nicht abgelenkt.'], begruendungRichtig: 0,
+        begruendungen: ['Im Norden: nach Norden, Ablenkung nach rechts; im Süden: nach Süden, Ablenkung nach links. Beide Male nach Osten.', 'Auf beiden Halbkugeln wird die Luft nach rechts abgelenkt, also immer in dieselbe Richtung.', 'Polwärts strömende Luft wird nicht abgelenkt und kommt deshalb auf beiden Halbkugeln aus Westen.'], begruendungRichtig: 0,
         erklaerung: 'Polwärts heißt auf der Nordhalbkugel nach Norden, auf der Südhalbkugel nach Süden. In beiden Fällen wird die Luft nach Osten abgelenkt. Der Wind kommt also aus Westen.',
         tipp: 'Prüfe beide Halbkugeln: Polwärts heißt im Norden nach Norden, im Süden nach Süden. Wohin wird die Luft jeweils abgelenkt?' },
       { id: 'q39', niveau: 'profi', typ: 'auswahl', thema: 'bamberg',
         frage: 'Welche Begründung erklärt am besten, warum in Bamberg meist Westwind weht?',
-        optionen: ['Bamberg liegt zwischen subtropischem Hochdruckgürtel und subpolarer Tiefdruckrinne. Die Luft strömt am Boden in Richtung Pol und wird nach rechts abgelenkt. Sie kommt deshalb aus Südwesten bis Westen.', 'Westlich von Bamberg ist es wärmer als östlich davon.', 'Die Luft strömt vom polaren Kältehoch in Richtung Äquator und wird nach rechts abgelenkt.', 'Bamberg liegt in der Zone der Passate.'], richtig: 0,
+        optionen: ['Die Luft strömt vom subtropischen Hochdruckgürtel in Richtung Pol und wird nach rechts abgelenkt.', 'Westlich von Bamberg ist es wärmer als östlich davon, deshalb strömt die Luft von dort.', 'Die Luft strömt vom polaren Kältehoch in Richtung Äquator und wird nach rechts abgelenkt.', 'Bamberg liegt in der Zone der Passate, die dort das ganze Jahr über wehen.'], richtig: 0,
         erklaerung: 'Eine gute Begründung nennt die Lage zwischen den Druckgürteln, die Bodenströmung in Richtung Pol, die Ablenkung nach rechts und die Benennung nach der Herkunft.',
         tipp: 'Eine gute Begründung nennt die Lage zwischen den Druckgürteln, die Strömungsrichtung am Boden und die Ablenkung.' },
       { id: 'q40', niveau: 'standard', typ: 'auswahl', thema: 'zellen',
         frage: 'Bei 65° steigt Luft auf. Wohin strömt sie in der Höhe?',
-        optionen: ['in Richtung Pol und in Richtung Äquator bis 35°, wo sie wieder absinkt', 'nur in Richtung Pol', 'nur in Richtung Äquator', 'Sie bleibt in der Höhe stehen.'], richtig: 0,
+        optionen: ['zum Pol und bis 35°, wo sie jeweils absinkt', 'nur zum Pol, wo sie wieder absinkt', 'nur bis 35°, wo sie wieder absinkt', 'Sie bleibt oben in der Höhe stehen.'], richtig: 0,
         erklaerung: 'So schließen sich zwei Kreisläufe: die polare Zelle und die Zelle der gemäßigten Breiten.',
         tipp: 'Am Pol und bei 35° sinkt Luft ab. Woher muss diese Luft in der Höhe kommen?' },
       { id: 'q41', niveau: 'profi', typ: 'auswahl', thema: 'ablenkung',
@@ -1628,7 +1642,7 @@ const CONTENT = {
     texteGeaendertMarke: 'geändert',
     texteOriginal: 'Original wiederherstellen',
     texteHerunterladen: 'Datei mit Änderungen herunterladen',
-    texteDateiname: 'Windsysteme_Hilfe_und_Quiz.html',
+    texteDateiname: 'index.html',
     texteExportiert: 'Datei erstellt. Auf dem iPad liegt sie in der App Dateien unter Downloads.',
     texteVerwerfen: 'Alle Änderungen verwerfen',
     texteVerwerfenFrage: 'Alle geänderten Texte auf diesem Gerät verwerfen? Die Originaltexte kommen zurück.',
@@ -4043,7 +4057,7 @@ function feldBestaetigt(teil, id) {
   if (alleFelderStimmen(teil)) return true;
   const def = einheitVon(teil, id);
   const geloest = function (k) { return !!pz.rf[k] && pz.rf[k].geloest; };
-  if (geloest(id) || (def && geloest(def.id))) return true;
+  if (rfRundeFertig(teil) && (geloest(id) || (def && geloest(def.id)))) return true;
   // In der Hilfe richtig korrigiert oder Schritt mit Hilfe ganz geschafft
   return !!def && hilfeEinheiten(teil).indexOf(def) >= 0 && (pz.erste[id] !== 'ok' || einheitStimmt(teil, def));
 }
@@ -4082,7 +4096,18 @@ function ablaufStand(teil) {
 }
 
 /* ----- Rückfragen (Schlüssel = Schritt, zum Beispiel 'S1', oder einzelnes Feld, zum Beispiel 'pol-luft') ----- */
-function rfDef(teil, key) { return CONTENT[teil].pruefen.rueckfragen[key]; }
+// Schlüssel: Schritt ('S1'), einzelnes Feld ('pol-luft') oder '?S1' = neutrale Rückfrage zum Bereich.
+// Die neutrale Rückfrage ist eine Frage zum Weiterdenken (pruefFrage): Sie verrät nichts und bestätigt nichts.
+function rfDef(teil, key) {
+  if (key.charAt(0) === '?') { const def = schrittDef(key.slice(1)); return def ? def.fragen[def.pruefFrage || 0] : undefined; }
+  return CONTENT[teil].pruefen.rueckfragen[key];
+}
+// Schritt, zu dem eine Rückfrage gehört
+function rfEinheit(teil, key) {
+  const id = key.charAt(0) === '?' ? key.slice(1) : key;
+  return schrittDef(id) || einheitVon(teil, id);
+}
+function rfRundeFertig(teil) { return zustand.pruefung[teil].rfListe.every(function (k) { return rfZustand(teil, k).geloest; }); }
 function rfZustand(teil, key) {
   const pz = zustand.pruefung[teil];
   if (!pz.rf[key]) pz.rf[key] = { wahl: [], versucht: [], letzte: null, falsch: false, geloest: false, fehl: 0, sperreVon: 0, sperreBis: 0 };
@@ -4093,17 +4118,21 @@ function rfFrei(teil, key) {
   const R = rfDef(teil, key);
   return !!R && (R.nach || []).every(function (id) { return einheitErstRichtig(teil, schrittDef(id)); });
 }
-// Gleich nach dem ersten Prüfen: Rückfragen zu Schritten, die ganz richtig sind,
-// und zu einzelnen richtigen Feldern, wenn im selben Schritt etwas noch nicht stimmt
+// Gleich nach dem ersten Prüfen: zu jedem Schritt genau eine Rückfrage, in der Reihenfolge des Arbeitsblatts.
+// Ganz richtig: Rückfrage zum Schritt. Teilweise richtig: Rückfrage zum richtigen Feld, falls es eine gibt.
+// Sonst (oder wenn die Rückfrage etwas verraten würde): neutrale Frage zum Bereich.
+// So ist nicht zu erkennen, welche Rückfragen zu richtigen und welche zu falschen Einträgen gehören.
 function rueckfragenZuerst(teil) {
   const e = zustand.pruefung[teil].erste;
-  const liste = [];
-  einheiten(teil).forEach(function (def) {
+  return einheiten(teil).map(function (def) {
     const richtig = def.felder.filter(function (id) { return e[id] === 'ok'; });
-    const keys = richtig.length === def.felder.length ? [def.id] : richtig.filter(function (id) { return !!rfDef(teil, id); });
-    keys.forEach(function (k) { if (rfFrei(teil, k)) liste.push(k); });
+    if (richtig.length === def.felder.length && rfFrei(teil, def.id)) return def.id;
+    if (richtig.length < def.felder.length) {
+      const feldRf = richtig.find(function (id) { return !!rfDef(teil, id) && rfFrei(teil, id); });
+      if (feldRf) return feldRf;
+    }
+    return '?' + def.id;
   });
-  return liste;
 }
 // Wenn alles stimmt: Rückfragen, die vorher etwas verraten hätten,
 // und zu korrigierten Schritten, deren Fragen zum Weiterdenken nicht alle gelöst sind
@@ -4124,10 +4153,10 @@ function bestandenPruefen(teil) {
   if (!pz.bestanden && pz.erste && alleFelderStimmen(teil) && !offeneRueckfragen(teil).length) pz.bestanden = true;
   return pz.bestanden;
 }
+// Angezeigt wird nur der Bereich, nicht das Feld (verrät sonst, welcher Eintrag gemeint ist)
 function rfBezug(teil, key) {
-  const def = schrittDef(key);
-  if (def) return def.kurz + (def.nr ? ' (' + def.nr + ')' : '');
-  return feldDef(key).text;
+  const def = rfEinheit(teil, key);
+  return def.kurz + (def.nr ? ' (' + def.nr + ')' : '');
 }
 
 /* ----- Wegweiser: Eintragen, Rückfragen, Hilfe, Profi ----- */
@@ -4235,7 +4264,7 @@ function htmlRueckfragenBlock(teil, st) {
     if (z.geloest) {
       // Gelöste Rückfragen kurz zusammengefasst
       const richtige = R.optionen.filter(function (o) { return o.richtig; });
-      h += '<div class="frage frage-geloest">' + kopf + richtige.map(function (o) { return '<p class="loesung-kurz">✓ ' + txt(o.text, false) + '</p>'; }).join('') +
+      h += '<div class="frage frage-geloest">' + kopf + richtige.map(function (o) { return '<p class="loesung-kurz">✓ ' + optionKurz(o) + '</p>'; }).join('') +
         '<div class="rueckmeldung stimmt" role="status">' + txt(R.ok || richtige[0].ok || ST.stimmt) + '</div></div>';
       continue;
     }
@@ -4246,7 +4275,9 @@ function htmlRueckfragenBlock(teil, st) {
 }
 function htmlRueckfrage(teil, key, R, z, kopf) {
   const gesperrt = z.sperreBis > jetzt();
-  let h = '<div class="frage" id="rf-' + key + '">' + kopf + '<p class="hinweis-leise">' + esc(R.mehrfach ? ST.rfMehrere : ST.rfEine) + '</p><div class="optionen">';
+  const mitBildern = R.optionen.some(function (o) { return o.bild; });
+  let h = '<div class="frage" id="rf-' + key.replace('?', 'n-') + '">' + kopf + (R.bild ? htmlBild(R.bild, 'bild-klein') : '') +
+    '<p class="hinweis-leise">' + esc(R.mehrfach ? ST.rfMehrere : ST.rfEine) + '</p><div class="optionen' + (mitBildern ? ' bild-optionen' : '') + '">';
   R.optionen.forEach(function (o, j) {
     if (R.mehrfach) {
       const an = z.wahl.indexOf(j) >= 0;
@@ -4255,7 +4286,7 @@ function htmlRueckfrage(teil, key, R, z, kopf) {
     } else {
       const versucht = z.versucht.indexOf(j) >= 0;
       h += '<button type="button" class="option' + (versucht ? ' versucht' : '') + '" data-aktion="rf-antwort" data-teil="' + teil + '" data-key="' + key + '" data-option="' + j + '"' + (gesperrt ? ' disabled' : '') + '>' +
-        txt(o.text, false) + (versucht ? ' <span class="option-zusatz">(' + esc(ST.schonVersucht) + ')</span>' : '') + '</button>';
+        htmlOptionInhalt(o) + (versucht ? ' <span class="option-zusatz">(' + esc(ST.schonVersucht) + ')</span>' : '') + '</button>';
     }
   });
   h += '</div>';
@@ -4273,7 +4304,7 @@ function htmlRueckfrage(teil, key, R, z, kopf) {
   return h + '</div>';
 }
 function htmlRfHilfe(teil, key) {
-  const def = schrittDef(key) || einheiten(teil).find(function (d) { return d.felder.indexOf(key) >= 0; });
+  const def = rfEinheit(teil, key);
   return '<div class="rf-hilfe"><span class="stufe-label">' + esc(ST.rfHilfeTitel) + '</span><div class="denkanstoss' + (def.bild ? ' mit-bild' : '') + '"><p>' + txt(def.denkanstoss) + '</p>' +
     (def.bild ? htmlBild(def.bild) : '') + '</div>' + htmlKartenChips(def.karten) + (def.werkzeug ? htmlWerkzeug('w-rf-' + def.id, 'rechts') : '') + '</div>';
 }
@@ -4358,7 +4389,14 @@ function denkanstossFuer(def, z) {
 // Fragen zum Weiterdenken: bei einem einzigen falschen Feld nur die passenden Fragen
 function fragenAuswahl(def, z) {
   const zu = z.zuschnitt && def.zuschnitt ? def.zuschnitt[z.zuschnitt] : null;
-  return (zu && zu.fragen) ? zu.fragen.slice() : def.fragen.map(function (f, i) { return i; });
+  const liste = (zu && zu.fragen) ? zu.fragen.slice() : def.fragen.map(function (f, i) { return i; });
+  // Die Frage, die schon als Rückfrage gelöst wurde, nicht noch einmal stellen
+  const rf = zustand.pruefung[teilVon(def.id)].rf['?' + def.id];
+  if (rf && rf.geloest) {
+    const ohne = liste.filter(function (i) { return i !== (def.pruefFrage || 0); });
+    if (ohne.length) return ohne;
+  }
+  return liste;
 }
 
 // Inhalt einer Antwortmöglichkeit: Text, Baukastenkarte oder Bild
@@ -4878,7 +4916,8 @@ function htmlQuizStart() {
   ['basis', 'standard', 'profi'].forEach(function (n) {
     h += '<button type="button" class="knopf" data-aktion="quiz-start" data-modus="' + n + '">' + esc(fmt(Q.rundeNiveau, { name: Q.niveaus[n].name })) + '</button>';
   });
-  h += '</div></div><div class="karte-box"><h2>' + esc(CONTENT.abfrage.titel) + '</h2><p class="einleitung">' + esc(CONTENT.abfrage.einleitung) + '</p>' +
+  h += '</div></div>';
+  if (CONFIG.ABFRAGE_TRAINING) h += '<div class="karte-box"><h2>' + esc(CONTENT.abfrage.titel) + '</h2><p class="einleitung">' + esc(CONTENT.abfrage.einleitung) + '</p>' +
     '<button type="button" class="knopf knopf-primaer" data-aktion="quiz-abfrage">' + esc(Q.abfrageKnopf) + '</button></div>';
   return h;
 }
@@ -4903,7 +4942,7 @@ function htmlQuizEnde() {
   }
   h += '<p class="hinweis-leise">' + esc(Q.endeKeineNote) + '</p><div class="knopf-reihe" style="justify-content:center">' +
     '<button type="button" class="knopf knopf-primaer" data-aktion="quiz-start" data-modus="' + esc(r.modus) + '">' + esc(Q.neueRunde) + '</button>' +
-    '<button type="button" class="knopf" data-aktion="quiz-abfrage">' + esc(Q.abfrageKnopf) + '</button>' +
+    (CONFIG.ABFRAGE_TRAINING ? '<button type="button" class="knopf" data-aktion="quiz-abfrage">' + esc(Q.abfrageKnopf) + '</button>' : '') +
     '<button type="button" class="knopf" data-aktion="quiz-uebersicht">' + esc(Q.zumStart) + '</button></div></div>';
   return h;
 }
@@ -4956,7 +4995,7 @@ function zeichneQuiz() {
     b.innerHTML = htmlQuizFrage();
   } else if (qz.ansicht === 'ende' && qz.runde) {
     b.innerHTML = htmlQuizEnde();
-  } else if (qz.ansicht === 'abfrage') {
+  } else if (qz.ansicht === 'abfrage' && CONFIG.ABFRAGE_TRAINING) {
     b.innerHTML = htmlAbfrage();
   } else {
     b.innerHTML = htmlQuizStart();
@@ -5198,7 +5237,7 @@ function kartenNachBedarf() {
   if (st.phase === 'hilfe') schritt = st.def.id;
   else if (st.phase === 'rueckfragen') {
     const key = offeneRueckfragen('teil1')[0];
-    if (key) schritt = schrittDef(key) ? key : (einheitVon('teil1', key) || {}).id;
+    if (key) schritt = (rfEinheit('teil1', key) || {}).id;
   } else if (st.phase === 'fertig') schritt = 'HOEHE';
   if (schritt && KARTEN_BEDARF[schritt]) karteFreischalten(KARTEN_BEDARF[schritt]);
 }
@@ -5468,7 +5507,7 @@ const AKTIONEN = {
     if (z.geloest || z.sperreBis > jetzt()) return;
     const j = +d.option;
     const ok = !!R.optionen[j].richtig;
-    if (!ok && z.versucht.indexOf(j) < 0) z.versucht.push(j);
+    if (!ok && z.versucht.indexOf(j) < 0) z.versucht.push(j);   // Rückfrage zur gewählten Antwort zeigt htmlRueckfrage
     rfAuswerten(d.teil, d.key, z, ok, j);
   },
   // Auswahlfragen der Profi-Aufgaben P1 (Laufrichtung der Zellen) und P4 (Merkregel)
@@ -5501,7 +5540,7 @@ const AKTIONEN = {
   // Quiz
   'quiz-oeffnen': function () { zustand.quizOffen = true; speichern(); zeichneQuiz(); },
   'quiz-start': function (d) { quizStarten(d.modus); zeichneQuiz(); nachOben('#bereich-quiz'); },
-  'quiz-abfrage': function () { zustand.quiz.ansicht = 'abfrage'; speichern(); zeichneQuiz(); nachOben('#bereich-quiz'); },
+  'quiz-abfrage': function () { if (!CONFIG.ABFRAGE_TRAINING) return; zustand.quiz.ansicht = 'abfrage'; speichern(); zeichneQuiz(); nachOben('#bereich-quiz'); },
   'quiz-uebersicht': function () {
     // Eine angefangene Runde bleibt erhalten; die Übersicht zeigt neue Runden
     zustand.quiz.ansicht = 'start';
@@ -5637,13 +5676,17 @@ function rfAuswerten(teil, key, z, ok, option) {
     z.falsch = false;
     bestandenPruefen(teil);
     ui.zumAblauf = teil;
-    // Der bestätigte Eintrag wird im Schema grün; die Meldung sagt das, auch wenn das Schema gerade nicht zu sehen ist
-    zeigeMeldung(alleFelderStimmen(teil) ? ST.meldungRf : fmt(ST.meldungBestaetigt, { s: rfBezug(teil, key) }));
+    // Neutrale Meldung; erst wenn alle Rückfragen der ersten Runde gelöst sind, werden die bestätigten Einträge grün
+    const ersteRunde = zustand.pruefung[teil].rfListe.indexOf(key) >= 0;
+    if (ersteRunde && rfRundeFertig(teil) && !alleFelderStimmen(teil)) {
+      const k = CONTENT[teil].pruefen.felder.filter(function (id) { return feldBestaetigt(teil, id); }).length;
+      zeigeMeldung(fmt(ST.meldungRunde, { k: k }));
+    } else zeigeMeldung(ST.meldungRf);
   } else {
     z.falsch = true;
     z.letzte = option;
     z.fehl += 1;
-    if (z.fehl === 2) hilfeZaehlen((schrittDef(key) || einheiten(teil).find(function (d) { return d.felder.indexOf(key) >= 0; })).id);
+    if (z.fehl === 2) hilfeZaehlen(rfEinheit(teil, key).id);
     z.sperreVon = jetzt();
     z.sperreBis = jetzt() + zeit('T_SPERRE_FEHLER');
   }
