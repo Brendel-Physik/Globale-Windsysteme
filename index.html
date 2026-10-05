@@ -174,7 +174,8 @@ const CONTENT = {
     ergebnisZeile: '{r} von {n} Einträgen stimmen.',
     verdeckt: 'Welche das sind, seht ihr nach den Rückfragen: Dann werden die Einträge grün, die stimmen und die ihr begründet habt. Später kommen die dazu, die ihr in der Hilfe richtig korrigiert.',
     jetztDran: 'Jetzt dran: {kurz}. Nur die Felder in diesem Bereich könnt ihr ändern.',
-    gesperrtWaehrendRf: 'Während der Rückfragen ist das Schema gesperrt.',
+    gesperrtWaehrendRf: 'Während der Rückfragen ist das Schema gesperrt. Markiert ist der Bereich, um den es in der Rückfrage geht.',
+    feldRueckfrage: 'Rückfrage',
     // Hilfe zu einem Eintrag, der noch nicht stimmt
     hilfeVon: 'Hilfe {i} von {n}',
     aufgabeLabel: 'Aufgabe {nr}:',
@@ -243,7 +244,7 @@ const CONTENT = {
     meldungRunde: 'Alle Rückfragen gelöst. Bestätigt sind jetzt {k} Einträge.',
     // Fortschrittsring und Erfolgsfenster
     bestaetigt: 'Bestätigt: {k} von {n}',
-    geschafft: 'Teil {nr} geschafft. Alle Einträge stimmen, und ihr habt sie begründet. Jetzt sind die Profi-Aufgaben frei.',
+    teilGeschafft: 'Teil {nr} geschafft. Alle Einträge stimmen, und ihr habt sie begründet. Jetzt sind die Profi-Aufgaben frei.',
     meldungRf: '✓ Rückfrage gelöst'
   },
 
@@ -694,15 +695,17 @@ const CONTENT = {
           nach: [],
           mehrfach: true,
           frage: 'Bei 35°: Welche Aussagen gelten für die Luft, die im subtropischen Hochdruckgürtel absinkt? Wählt alle passenden aus.',
+          // Jede Aussage steht für sich und ist etwa gleich lang. Die falschen sind typische Fehlvorstellungen:
+          // nur der Passat, Luft strömt zum Hoch hin, der Pol zieht die Luft an. Nichts verrät etwas über 65°.
           optionen: [
-            { text: 'Ein Teil strömt am Boden in Richtung Äquator.', richtig: true },
-            { text: 'Ein anderer Teil strömt am Boden in Richtung Pol.', richtig: true },
-            { text: 'Am Boden strömt sie nach allen Seiten vom Hoch weg.', richtig: true },
-            { text: 'Sie bleibt am Boden im Hochdruckgürtel liegen.' },
-            { text: 'Sie strömt am Boden nur in Richtung Äquator.' }
+            { text: 'Am Boden strömt ein Teil von ihr in Richtung Pol und ein Teil in Richtung Äquator.', richtig: true },
+            { text: 'Am Boden strömt sie immer vom Hoch weg, dorthin, wo der Luftdruck tiefer ist.', richtig: true },
+            { text: 'Am Boden strömt sie als Passat zum Äquator. In Richtung Pol strömt keine Luft.' },
+            { text: 'Am Boden strömt von beiden Seiten Luft auf das Hoch zu und sammelt sich dort.' },
+            { text: 'Am Boden strömt sie in Richtung Pol, weil der kalte Pol die Luft anzieht.' }
           ],
-          tipp: 'Stellt euch das Hoch als Hügel vor, von dem Luft herunterfließt. Fließt sie nur auf einer Seite hinunter?',
-          ok: 'Stimmt. Aus dem Hoch strömt Luft am Boden in beide Richtungen.'
+          tipp: 'Lest Karte W9: Wohin strömt Luft am Boden, und was bestimmt die Richtung? Stellt euch das Hoch als Hügel vor, von dem Luft herunterfließt.',
+          ok: 'Stimmt. Aus dem Hoch strömt Luft am Boden nach beiden Seiten weg: als Passat zum Äquator und in Richtung Pol.'
         },
         S4: {
           nach: ['S2', 'S3'],
@@ -2192,6 +2195,10 @@ const CONTENT = {
   .feld.ok { border: 3px solid var(--ok-linie); background: var(--ok-hg); color: var(--ok-text); }
   .feld.nein, .feld.fast { border: 3px solid var(--hinweis-linie); background: var(--hinweis-hg); color: var(--hinweis-text); }
   .feld.jetzt { border: 3px solid var(--akzent); box-shadow: 0 0 0 3px var(--akzent-rand); }
+  /* Bereich der offenen Rückfrage: Ring mit Abstand, nur zum Hinschauen (anders als "jetzt dran" zum Ändern) */
+  .feld.bezug { box-shadow: 0 0 0 6px var(--akzent-rand), 0 0 0 9px var(--akzent); z-index: 1; }
+  .svg-bezug-ring { fill: var(--akzent-rand); stroke: var(--akzent); stroke-width: 5; }
+  .feld-zeile.bezug { background: var(--akzent-hell); border-radius: 10px; padding: 7px 10px; margin: 4px 0; border-bottom: none; }
   .feld[disabled] { cursor: default; }
   .feld:focus-visible { outline: 3px solid var(--akzent); outline-offset: 2px; z-index: 2; }
   @media (hover: hover) { .feld:not([disabled]):hover { background: var(--karte); border-color: var(--akzent-dunkel); } }
@@ -2939,6 +2946,25 @@ function mischen(liste) {
   return a;
 }
 
+// Gemischte, aber feste Reihenfolge 0..n-1 zu einem Schlüssel: bleibt beim Neuzeichnen gleich
+function festGemischt(schluessel, n) {
+  let s = 2166136261;
+  for (let i = 0; i < schluessel.length; i++) s = Math.imul(s ^ schluessel.charCodeAt(i), 16777619);
+  function zufall() {
+    s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const a = [];
+  for (let i = 0; i < n; i++) a.push(i);
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(zufall() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
 function listeText(ids) {
   if (ids.length < 2) return ids.join('');
   return ids.slice(0, -1).join(', ') + ' ' + A.und + ' ' + ids[ids.length - 1];
@@ -2983,6 +3009,8 @@ function neuerZustand(einstellungen) {
     },
     quiz: { ansicht: 'start', runde: null },
     abfrage: {},
+    // Zufallszahl je Gerät: mischt die Antworten der Rückfragen, bleibt bis zum Neustart gleich
+    mischung: Math.floor(Math.random() * 2147483647),
     // dunkel: true = dunkle Ansicht, false = helle Ansicht, null = wie am Gerät eingestellt
     // schrift: 0 = normal, 1 = groß, 2 = sehr groß
     einstellungen: einstellungen || { zeiten: {}, zeitdruck: false, dunkel: null, schrift: 0 }
@@ -3652,7 +3680,7 @@ function feldInhalt(id, wert) {
 // Kleine Bildschirme: Die Werte erscheinen als Zeichen direkt in der Skizze, eingegeben wird darunter.
 // klasse 'feld-svg-immer': Zeichen bei jeder Fenstergröße zeigen (Ausschnitt in der Hilfe, Großansicht)
 function feldSvg(c, werte, ergebnis, klasse) {
-  let s = '<g class="' + (klasse || 'feld-svg') + '" aria-hidden="true">';
+  let s = '', ringe = '';
   c.felder.forEach(function (id) {
     const f = feldDef(id);
     const p = feldPos(c.art, id);
@@ -3663,6 +3691,8 @@ function feldSvg(c, werte, ergebnis, klasse) {
     else if (erg === 'nein' || erg === 'fast') { rand = '#C9A227'; fuell = '#FFFBEA'; }
     // Felder, die jetzt dran sind, bekommen eine kräftigere Umrandung, wenn sie nur als Bild gezeigt werden
     const kl = c.gruppe && (c.jetzt || []).indexOf(id) >= 0 && feldOffen(c.gruppe, id) ? 'svg-jetzt' : '';
+    // Bereich der offenen Rückfrage: farbiger Saum um das Feld, unter allen Feldern gezeichnet
+    if ((c.bezug || []).indexOf(id) >= 0) ringe += '<rect class="svg-bezug-ring" x="' + (p[0] - 9) + '" y="' + (p[1] - 9) + '" width="' + (p[2] + 18) + '" height="' + (p[3] + 18) + '" rx="17"/>';
     s += '<rect' + (kl ? ' class="' + kl + '"' : '') + ' x="' + (p[0] + 3) + '" y="' + (p[1] + 3) + '" width="' + (p[2] - 6) + '" height="' + (p[3] - 6) + '" rx="10" fill="' + fuell + '" stroke="' + rand + '" stroke-width="4"' + (wert ? '' : ' stroke-dasharray="10 8"') + '/>';
     if (!wert) return;
     let text = feldGlyph(f.art, wert);
@@ -3680,7 +3710,7 @@ function feldSvg(c, werte, ergebnis, klasse) {
     const farbe = wert === 'H' ? ROT : (wert === 'T' ? BLAU : '#3C3489');
     s += tx(p[0] + p[2] / 2, p[1] + p[3] / 2 + gr * 0.36, text, { gr: Math.round(gr), fett: true, farbe: farbe });
   });
-  return s + '</g>';
+  return '<g class="' + (klasse || 'feld-svg') + '" aria-hidden="true">' + ringe + s + '</g>';
 }
 // Bewertung eines Werts: 'ok', 'fast', 'nein' oder 'offen'
 function feldBewertung(id, wert) {
@@ -3769,10 +3799,12 @@ function htmlFeldWahl(gruppe, id) {
 
 // Skizze mit Feldern zum Antippen. Auf schmalen Bildschirmen erscheinen darunter Auswahlknöpfe.
 // c.jetzt: Felder, zu denen es gerade Hilfe gibt (werden hervorgehoben)
+// c.bezug: Felder des Bereichs, um den es in der offenen Rückfrage geht (nur markiert, nicht änderbar)
 function htmlTippSkizze(c) {
   const werte = gruppeWerte(c.gruppe);
   const ergebnis = sichtbaresErgebnisVon(c.gruppe) || {};
   const jetztDran = c.jetzt || [];
+  const bezug = c.bezug || [];
   const aus = c.aus;
   let h = '<div class="tipp-skizze" style="max-width:' + c.maxBreite + 'px">';
   if (c.titel) h += '<div class="skizze-titel">' + esc(c.titel) + '</div>';
@@ -3786,6 +3818,7 @@ function htmlTippSkizze(c) {
     let cls = 'feld feld-art-' + feldDef(id).art + (wert ? ' gesetzt' : '');
     if (erg === 'ok') cls += ' ok'; else if (erg === 'nein') cls += ' nein'; else if (erg === 'fast') cls += ' fast';
     if (offen && jetztDran.indexOf(id) >= 0) cls += ' jetzt';
+    if (bezug.indexOf(id) >= 0) cls += ' bezug';
     if (c.start === id) cls += ' start';
     const marke = erg === 'ok' ? '✓' : (erg === 'nein' || erg === 'fast' ? '!' : '');
     h += '<button type="button" class="' + cls + '" style="left:' + r1((p[0] - aus[0]) / aus[2] * 100) + '%;top:' + r1((p[1] - aus[1]) / aus[3] * 100) + '%;width:' + r1(p[2] / aus[2] * 100) + '%;height:' + r1(p[3] / aus[3] * 100) + '%"' +
@@ -3800,7 +3833,9 @@ function htmlTippSkizze(c) {
     const offen = feldOffen(c.gruppe, id);
     if (!offen && werte[id]) {
       // Gesperrte Felder nur kurz zusammengefasst (spart auf dem Handy viel Platz)
-      h += '<div class="feld-zeile kompakt"><span class="feld-zeile-text">' + esc(feldMitWert(id, werte[id])) + '</span>' +
+      const istBezug = bezug.indexOf(id) >= 0;
+      h += '<div class="feld-zeile kompakt' + (istBezug ? ' bezug' : '') + '"><span class="feld-zeile-text">' + esc(feldMitWert(id, werte[id])) + '</span>' +
+        (istBezug ? ' <span class="jetzt-marke">' + esc(ST.feldRueckfrage) + '</span>' : '') +
         (erg ? ' ' + htmlBewertungsMarke(erg, c.texte) : '') + '</div>';
       return;
     }
@@ -4162,6 +4197,14 @@ function rfBezug(teil, key) {
   const def = rfEinheit(teil, key);
   return def.kurz + (def.nr ? ' (' + def.nr + ')' : '');
 }
+// Felder, die in der Skizze zur offenen Rückfrage markiert werden: aus demselben Grund immer der ganze Bereich
+function rfBezugFelder(teil, st) {
+  if (st.phase !== 'rueckfragen') return [];
+  const pz = zustand.pruefung[teil];
+  const key = (st.etappe === 'A' ? pz.rfListe : pz.rf2Liste).find(function (k) { return !rfZustand(teil, k).geloest; });
+  const def = key ? rfEinheit(teil, key) : null;
+  return def ? def.felder : [];
+}
 
 /* ----- Wegweiser: Eintragen, Rückfragen, Hilfe, Profi ----- */
 const SCHLOSS = '<svg viewBox="0 0 24 24" width="18" height="18" focusable="false"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>';
@@ -4199,7 +4242,7 @@ function htmlSchema(teil, st) {
     if (P.startHinweis) h += '<div class="start-hinweis"><span class="start-symbol" aria-hidden="true">⚑</span><p><strong>' + esc(ST.startTitel) + '</strong> ' + txt(P.startHinweis) + '</p></div>';
   }
   h += htmlTippSkizze({ gruppe: teil, felder: P.felder, art: g.art, aus: g.aus, maxBreite: teil === 'teil1' ? 1000 : 560, titel: g.titel,
-    svg: g.svg(g.aus), texte: P, jetzt: st.phase === 'hilfe' ? st.def.felder : [],
+    svg: g.svg(g.aus), texte: P, jetzt: st.phase === 'hilfe' ? st.def.felder : [], bezug: rfBezugFelder(teil, st),
     start: st.phase === 'eintragen' ? P.startFeld : null });
   // Auf kleinen Bildschirmen: Skizze vergrößern (Gerät quer halten)
   h += '<div class="knopf-reihe nur-schmal"><button type="button" class="knopf knopf-klein" data-aktion="skizze-gross" data-skizze="schema-' + teil + '">' + esc(A.skizzeGross) + '</button></div>';
@@ -4282,7 +4325,9 @@ function htmlRueckfrage(teil, key, R, z, kopf) {
   const mitBildern = R.optionen.some(function (o) { return o.bild; });
   let h = '<div class="frage" id="rf-' + key.replace('?', 'n-') + '">' + kopf + (R.bild ? htmlBild(R.bild, 'bild-klein') : '') +
     '<p class="hinweis-leise">' + esc(R.mehrfach ? ST.rfMehrere : ST.rfEine) + '</p><div class="optionen' + (mitBildern ? ' bild-optionen' : '') + '">';
-  R.optionen.forEach(function (o, j) {
+  // In der Datei stehen die richtigen Antworten meist vorn. Angezeigt wird je Gerät gemischt; j bleibt der Index in der Datei.
+  festGemischt(zustand.mischung + '|' + teil + '|' + key, R.optionen.length).forEach(function (j) {
+    const o = R.optionen[j];
     if (R.mehrfach) {
       const an = z.wahl.indexOf(j) >= 0;
       h += '<button type="button" class="option option-mehrfach' + (an ? ' gewaehlt' : '') + '" role="checkbox" aria-checked="' + an + '" data-aktion="rf-wahl" data-teil="' + teil + '" data-key="' + key + '" data-option="' + j + '"' + (gesperrt ? ' disabled' : '') + '>' +
@@ -4656,7 +4701,7 @@ function htmlCodewortFormular() {
 
 // Profi-Aufgaben: erst frei, wenn alles geschafft ist
 function htmlProfi(teil) {
-  let h = '<div class="rueckmeldung stimmt geschafft" role="status">' + esc(fmt(ST.geschafft, { nr: teil === 'teil1' ? 1 : 2 })) + '</div>' +
+  let h = '<div class="rueckmeldung stimmt geschafft" role="status">' + esc(fmt(ST.teilGeschafft, { nr: teil === 'teil1' ? 1 : 2 })) + '</div>' +
     '<h2 class="profi-titel">' + esc(CONTENT[teil].profi.titel) + '</h2>';
   if (teil === 'teil1') h += htmlP1() + htmlP2();
   else h += htmlP3() + htmlP4() + htmlInfoBox();
