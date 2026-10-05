@@ -162,7 +162,7 @@ const CONTENT = {
     weg: { label: 'Euer Weg durch diesen Teil', eintragen: 'Eintragen', rueckfragen: 'Rückfragen', hilfe: 'Hilfe', profi: 'Profi', entfaellt: 'entfällt', jetzt: 'jetzt' },
     startTitel: 'So startet ihr:',
     startLabel: 'Start',
-    vorPruefen: 'Nach dem Prüfen kommen zuerst Rückfragen zu euren richtigen Einträgen. Danach gibt es Hilfe, aber nur zu den Einträgen, die noch nicht stimmen.',
+    vorPruefen: 'Nach dem Prüfen kommt zu jedem Bereich eine Rückfrage. Danach gibt es Hilfe, aber nur dort, wo noch etwas nicht stimmt.',
     // Leiste unter dem Schema vor dem ersten Prüfen
     ausgefuellt: '{n} von {m} Feldern ausgefüllt',
     leeren: 'Einträge löschen',
@@ -177,7 +177,7 @@ const CONTENT = {
     gesperrtWaehrendRf: 'Während der Rückfragen ist das Schema gesperrt.',
     // Hilfe zu einem Eintrag, der noch nicht stimmt
     hilfeVon: 'Hilfe {i} von {n}',
-    aufgabeLabel: 'Aufgabe {nr} auf eurem Arbeitsblatt:',
+    aufgabeLabel: 'Aufgabe {nr}:',
     aufgabeOhneNr: 'Aufgabe',
     ausschnitt: 'Ausschnitt mit euren Einträgen',
     nochNicht: 'noch nicht',
@@ -398,7 +398,7 @@ const CONTENT = {
      ================================================================= */
   teil1: {
     titel: 'Hilfe Teil 1: Vom Äquator zum Pol',
-    einleitung: 'Tragt eure Lösung vom Arbeitsblatt in das ganze Schema ein und prüft sie. Danach kommen Rückfragen zu euren richtigen Einträgen und, nur wenn nötig, Hilfe zu den anderen.',
+    einleitung: 'Tragt alles in das Schema ein und prüft es. Danach kommt zu jedem Bereich eine Rückfrage und, wo nötig, Hilfe.',
     /* Aufbau eines Schritts. Die Hilfe zu einem Schritt erscheint nur, wenn dort ein Eintrag noch nicht stimmt.
        nr: Nummer auf dem AB (leer lassen, wenn es keine gibt), kurz: Name des Schritts,
        aufgabe: wie auf dem AB, felder: Felder im Schema, die zu diesem Schritt gehören,
@@ -559,7 +559,7 @@ const CONTENT = {
         bild: '65-lupe',
         fragen: [
           {
-            frage: 'Zählt auf eurem AB: Wie viele Bodenpfeile zeigen auf 65°?',
+            frage: 'Zählt in eurer Skizze: Wie viele Bodenpfeile zeigen auf 65°?',
             optionen: [
               { text: 'keiner', rueckfrage: 'Schaut auf S2: Wohin strömt die Luft vom Pol aus?' },
               { text: 'einer', rueckfrage: 'Schaut auf S2 und auf S3. Kommt von beiden Seiten Luft?' },
@@ -645,7 +645,7 @@ const CONTENT = {
 
     pruefen: {
       titel: 'Alle Druckgebiete und Winde testen',
-      einleitung: 'Übertragt eure Lösung vom Arbeitsblatt in die Skizze: Tippt auf die Felder, auch auf die Pfeile in der Höhe. Nach dem Prüfen erfahrt ihr zuerst nur, wie viele Einträge stimmen.',
+      einleitung: 'Tippt auf die Felder und tragt ein, was die Luft macht, welcher Luftdruck entsteht und wohin die Luft strömt, auch in der Höhe. Nach dem Prüfen erfahrt ihr zuerst nur, wie viele Einträge stimmen.',
       // Ohne Strömung in der Höhe (wie früher nur als Profi-Aufgabe): 'hoehe-mitte' und 'hoehe-polar' hier löschen.
       // Der Schritt „In der Höhe“ entfällt dann von selbst.
       felder: ['pol-luft', 'pol-druck', 'polar-boden', 'mitte-boden', '65-luft', '65-druck', 'hoehe-mitte', 'hoehe-polar'],
@@ -815,7 +815,7 @@ const CONTENT = {
     codewortLabel: 'Codewort',
     codewortKnopf: 'Freischalten',
     codewortFalsch: 'Das Codewort stimmt noch nicht. Achtet auf die Schreibweise.',
-    einleitung: 'Nutzt die neuen Karten W11 und W12. Tragt alle Winde in das Schema ein und prüft sie. Danach kommen Rückfragen zu euren richtigen Einträgen und, nur wenn nötig, Hilfe zu den anderen.',
+    einleitung: 'Nutzt die neuen Karten W11 und W12. Tragt alle Winde in das Schema ein und prüft sie. Danach kommt zu jedem Bereich eine Rückfrage und, wo nötig, Hilfe.',
 
     /* Felder zum Antippen in Teil 2 ("aus" = Herkunft des Windes, Auswahl aus acht Richtungen).
        merksatz: {wert} wird durch den Eintrag ersetzt, zum Beispiel "aus Nordosten".
@@ -1002,7 +1002,7 @@ const CONTENT = {
         kachel: 'bamberg',
         karten: ['W9', 'W11', 'W12'],
         satzbausteine: 'bamberg',
-        denkanstoss: 'Sucht 50° N auf eurem Arbeitsblatt (Bild). Zwischen welchen beiden Druckgürteln liegt Bamberg? Vergleicht mit der [[Globusabbildung]] im Buch.',
+        denkanstoss: 'Sucht 50° N im Bild. Zwischen welchen beiden Druckgürteln liegt Bamberg? Vergleicht mit der [[Globusabbildung]] im Buch.',
         bild: 'bamberg-lage',
         fragen: [
           {
@@ -1014,7 +1014,7 @@ const CONTENT = {
             ]
           },
           {
-            frage: 'Welche Aufgabe auf eurem AB (S5 bis S7) behandelt die Zone, in der Bamberg liegt?',
+            frage: 'Welcher Schritt (S5 bis S7) behandelt die Zone, in der Bamberg liegt?',
             optionen: [
               { text: 'S5', rueckfrage: 'S5 behandelt die Luft zwischen dem subtropischen Hochdruckgürtel und dem Äquator. Liegt Bamberg dort?' },
               { text: 'S6', rueckfrage: 'S6 behandelt die Luft zwischen 65° und dem Pol. Liegt Bamberg so nah am Pol?' },
@@ -1045,7 +1045,7 @@ const CONTENT = {
 
     pruefen: {
       titel: 'Alle Winde testen',
-      einleitung: 'Tragt für jeden Bodenwind ein, aus welcher Richtung er kommt, und ergänzt Bamberg. Tippt dazu auf die Felder. Nach dem Prüfen erfahrt ihr zuerst nur, wie viele Einträge stimmen.',
+      einleitung: 'Tippt auf die Felder: Aus welcher Richtung kommt der Wind in jeder Zone, und in welchem Windgürtel liegt Bamberg? Nach dem Prüfen erfahrt ihr zuerst nur, wie viele Einträge stimmen.',
       felder: ['passat-aus', 'polar-aus', 'west-aus', 'bamberg-guertel', 'bamberg-aus'],
       // Hinweis zum Start und Feld mit dem Fähnchen „Start“   [LEHRKRAFT PRÜFEN]
       startHinweis: 'Beginnt mit dem Passat zwischen 0° und 23,5°. Geht in drei Schritten vor: Wohin strömt die Luft dort am Boden (Teil 1)? Wohin wird sie abgelenkt (W11)? Woher kommt sie also (W12)? Geht bei den anderen Winden genauso vor.',
@@ -1269,7 +1269,7 @@ const CONTENT = {
         frage: 'Wo liegt der subtropische Hochdruckgürtel?',
         optionen: ['zwischen 23,5° und 35°', 'am Äquator', 'um 65°', 'zwischen 80° und dem Pol'], richtig: 0,
         erklaerung: 'Der subtropische Hochdruckgürtel (H) liegt zwischen 23,5° und 35°. Dort sinkt Luft ab.',
-        tipp: 'Subtropisch heißt: zwischen den Tropen und den gemäßigten Breiten. Schau auf die Breitenkreise auf deinem Arbeitsblatt.' },
+        tipp: 'Subtropisch heißt: zwischen den Tropen und den gemäßigten Breiten. Schau auf die Breitenkreise in der Skizze.' },
       { id: 'q03', niveau: 'basis', typ: 'auswahl', thema: 'lage',
         frage: 'Wo liegt die subpolare Tiefdruckrinne?',
         optionen: ['um 65°', 'um 35°', 'am Äquator', 'am Pol'], richtig: 0,
@@ -2643,6 +2643,9 @@ const CONTENT = {
   .freitext.text-feld { min-height: 64px; }
   .text-stand { font-weight: 600; margin-top: 12px; }
 
+  /* Kopf eines Teils: nur der Wegweiser, schmaler Kasten */
+  .karte-box.teil-kopf { padding: 12px 16px; }
+
   /* ===== Ruhiger Stil =====
      Flache Flächen mit feinen Linien, eine Akzentfarbe für Hauptknopf und aktuellen Schritt,
      Status als Text statt Abzeichen, keine Schmuckanimationen. */
@@ -2779,7 +2782,8 @@ const CONTENT = {
         </button>
       </div>
     </div>
-    <div class="statuszeile" id="statuszeile" aria-live="polite"></div>
+    <!-- Stand (Teil, Phase, Hilfen): nicht sichtbar, wird aber von Vorlesehilfen angesagt -->
+    <div class="sr-only" id="statuszeile" aria-live="polite"></div>
   </header>
 
   <div class="speicher-hinweis" id="speicher-hinweis" hidden></div>
@@ -4665,7 +4669,8 @@ function zeichneTeil(teil) {
   if (teil === 'teil2' && !zustand.teil2Frei) { b.innerHTML = htmlTeil2Gesperrt(); zeichneStatus(); return; }
   if (bestandenPruefen(teil)) speichern();
   const st = ablaufStand(teil);
-  let h = '<div class="karte-box teil-kopf"><h2>' + esc(T.titel) + '</h2><p class="einleitung">' + txt(T.einleitung) + '</p>' + htmlWeg(teil, st) + '</div>';
+  // Kopf: nur der Wegweiser; die Überschrift ist nur für Vorlesehilfen da
+  let h = '<div class="karte-box teil-kopf"><h2 class="sr-only">' + esc(T.titel) + '</h2>' + htmlWeg(teil, st) + '</div>';
   const schema = htmlSchema(teil, st);
   const ablauf = st.phase === 'rueckfragen' ? htmlRueckfragenBlock(teil, st) : (st.phase === 'hilfe' ? htmlHilfeEinheit(teil, st) : '');
   // Mit Rückfragen oder Hilfe: im Querformat Schema links, Ablauf rechts (Stil „arbeitsflaeche“), sonst untereinander
@@ -4673,7 +4678,7 @@ function zeichneTeil(teil) {
   else h += schema;
   if (zustand.pruefung[teil].bestanden) h += htmlProfi(teil);
   h += '<p class="hilfezaehler" id="hilfezaehler">' + esc(hilfeText(teil)) + '</p>';
-  b.innerHTML = h;
+  inhaltSetzen(b, h);
   zeichneStatus();
 }
 
@@ -4992,13 +4997,13 @@ function zeichneQuiz() {
     b.innerHTML = '<div class="karte-box"><h2>' + esc(Q.titel) + '</h2><p>' + esc(Q.sperreHinweis) + '</p>' +
       '<button type="button" class="knopf knopf-primaer" data-aktion="quiz-oeffnen">' + esc(Q.sperreKnopf) + '</button></div>';
   } else if (qz.ansicht === 'runde' && qz.runde && qz.runde.pos < qz.runde.folge.length) {
-    b.innerHTML = htmlQuizFrage();
+    inhaltSetzen(b, htmlQuizFrage());
   } else if (qz.ansicht === 'ende' && qz.runde) {
-    b.innerHTML = htmlQuizEnde();
+    inhaltSetzen(b, htmlQuizEnde());
   } else if (qz.ansicht === 'abfrage' && CONFIG.ABFRAGE_TRAINING) {
     b.innerHTML = htmlAbfrage();
   } else {
-    b.innerHTML = htmlQuizStart();
+    inhaltSetzen(b, htmlQuizStart());
   }
   zeichneStatus();
 }
@@ -5092,7 +5097,7 @@ function zeichneLehrkraft() {
     '<button type="button" class="knopf" data-aktion="lk-reset-nein">' + esc(L.resetNein) + '</button></div></div>';
   if (ui.meldung === 'reset') h += '<p class="okt" role="status">' + esc(L.resetFertig) + '</p>';
   h += '</div>' + htmlTextEditor() + htmlLernstand();
-  b.innerHTML = h;
+  inhaltSetzen(b, h);
   zeichneStatus();
 }
 
@@ -5167,7 +5172,24 @@ function stelleFokusHer() {
   if (e && !e.disabled) { try { e.focus({ preventScroll: true }); } catch (err) { /* ältere Browser */ } }
   fokusMerker = null;
 }
-function neu(fn) { merkeFokus(); fn(); stelleFokusHer(); }
+// Neu zeichnen, ohne dass die Seite springt: Safari auf dem iPad hält die Scrollposition nicht von selbst,
+// wenn ein Abschnitt ersetzt wird. Deshalb Position (auch in der linken Spalte) merken und wiederherstellen.
+function neu(fn) {
+  const y = window.pageYOffset;
+  const spalte = $('.spalte-schema');
+  const ys = spalte ? spalte.scrollTop : 0;
+  merkeFokus(); fn(); stelleFokusHer();
+  if (Math.abs(window.pageYOffset - y) > 1) window.scrollTo(0, y);
+  const spalte2 = $('.spalte-schema');
+  if (spalte2 && ys) spalte2.scrollTop = ys;
+}
+// Inhalt eines Bereichs ersetzen; die alte Höhe bleibt kurz stehen, damit die Seite beim Ersetzen nicht zusammenfällt
+function inhaltSetzen(el, html) {
+  const hoehe = el.offsetHeight;
+  if (hoehe) el.style.minHeight = hoehe + 'px';
+  el.innerHTML = html;
+  if (hoehe) window.requestAnimationFrame(function () { el.style.minHeight = ''; });
+}
 function ersetzeBlock(sel, html) {
   const alt = $(sel);
   if (!alt) return false;
